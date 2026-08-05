@@ -142,7 +142,7 @@
         align-items: center;
         gap: 10px;
         margin-top: 15px;
-        padding-top: 15px;
+        padding: 8px 0; /* Ajustado para dar folga em cima e embaixo */
         border-top: 1px dashed var(--border-color);
         overflow-x: auto;
         white-space: nowrap;
@@ -186,9 +186,29 @@
         color: #ffffff; 
         border-color: var(--primary-color); 
     }
+    /* --- BOLINHAS SÓLIDAS DO FILTRO DE CORES --- */
+    .color-filter-dot { 
+        width: 26px; 
+        height: 26px; 
+        min-width: 26px;
+        min-height: 26px;
+        border-radius: 50%; 
+        cursor: pointer; 
+        border: 2px solid var(--border-color); 
+        transition: var(--transition); 
+        flex-shrink: 0;
+        padding: 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    }
+    .color-filter-dot:hover { border-color: var(--accent-color); transform: scale(1.1); }
+    .color-filter-dot.active { 
+        border-color: var(--primary-color); 
+        transform: scale(1.2); 
+        box-shadow: 0 0 0 2px rgba(0,0,0,0.2); 
+    }
 
-    .results-info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-    .results-counter { font-size: 12px; color: var(--text-muted); font-weight: 300; letter-spacing: 0.03em; }
+    .results-info-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 25px; }
+    .results-counter { font-size: 12px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
     
     .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px 30px; }
     
@@ -464,8 +484,8 @@
         .sizes-container { margin-top: 6px; padding-top: 6px; gap: 6px; }
         .size-label { font-size: 11px; }
         .size-tab { padding: 6px 12px; font-size: 11px; }
-        .results-info-row { margin-bottom: 8px; }
-        .results-counter { font-size: 12px; }
+        .results-info-row { margin-top: 15px; margin-bottom: 12px; }
+        .results-counter { font-size: 11px; }
     }
     
     @media (max-width: 480px) {
@@ -523,7 +543,12 @@
             
             <div class="categories-tabs" id="categories-tabs"></div>
 
-            <div class="sizes-container">
+            <div class="sizes-container" style="border-top: none; margin-top: 5px; padding-top: 5px;">
+                <span class="size-label">Cor:</span>
+                <div class="sizes-tabs" id="colors-tabs"></div>
+            </div>
+
+           <div class="sizes-container">
                 <span class="size-label">Tamanho:</span>
                 <div class="sizes-tabs" id="sizes-tabs"></div>
             </div>
@@ -1428,6 +1453,7 @@
         
         let categoriaAtual = 'Todos';
         let tamanhoAtual = 'Todos';
+        let corAtual = 'Todas';
         let termoPesquisa = '';
         let statusFiltro = 'todos';
         let produtosFiltradosGlobais = [];
@@ -1555,6 +1581,7 @@
 
             gerarAbasCategorias();
             gerarAbasTamanhos();
+            gerarAbasCores();
             atualizarFiltrosERenderizar();
             configurarObservadorRolagem();
         });
@@ -1599,11 +1626,80 @@
                 containerTamanhos.appendChild(btn);
             });
         }
-
         function filtrarTamanho(tamanho) {
             tamanhoAtual = tamanho;
-            document.querySelectorAll('.size-tab').forEach(btn => {
+            // O '#sizes-tabs' garante que ele pinte apenas os botões de tamanho!
+            document.querySelectorAll('#sizes-tabs .size-tab').forEach(btn => {
                 if (btn.getAttribute('data-size') === tamanho) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            atualizarFiltrosERenderizar();
+        }
+
+        function gerarAbasCores() {
+            const containerCores = document.getElementById('colors-tabs');
+            let coresData = []; 
+            
+            // Dicionário de Cores Sólidas
+            const mapaCoresHex = {
+                'Preto': '#000000',
+                'Branco': '#ffffff',
+                'Bordô': '#6d0c24',
+                'Azul marinho': '#1a2436',
+                'Verde oliva': '#556b2f',
+                'Azul': '#3a5f85',
+                'Marrom': '#6b4e31',
+                'Bege': '#e6d8c3',
+                'Fúcsia': '#d9027d',
+                'Rosa': '#f2a7b9',
+                'Verde': '#2d7a3e',
+                'Terracota': '#bd5a3a',
+                'Amarelo': '#eeb422',
+                'Vermelho': '#c21a1a',
+                'Azul petróleo': '#1e4d56'
+            };
+            
+            produtos.forEach(p => {
+                p.variantes.forEach(v => {
+                    let corLimpa = v.cor.split('(')[0].trim();
+                    corLimpa = corLimpa.charAt(0).toUpperCase() + corLimpa.slice(1).toLowerCase();
+                    
+                    if (!coresData.includes(corLimpa) && corLimpa !== '') {
+                        coresData.push(corLimpa);
+                    }
+                });
+            });
+
+            coresData.sort((a, b) => a.localeCompare(b));
+            
+            containerCores.innerHTML = '';
+            
+            // Botão "Todas"
+            const btnTodas = document.createElement('button');
+            btnTodas.className = `size-tab ${corAtual === 'Todas' ? 'active' : ''}`;
+            btnTodas.style.borderRadius = '50px'; 
+            btnTodas.textContent = 'Todas';
+            btnTodas.setAttribute('data-color', 'Todas');
+            btnTodas.onclick = () => filtrarCor('Todas');
+            containerCores.appendChild(btnTodas);
+
+            // Bolinhas sólidas
+            coresData.forEach(nomeCor => {
+                const btn = document.createElement('button');
+                btn.className = `color-filter-dot ${corAtual === nomeCor ? 'active' : ''}`;
+                btn.style.backgroundColor = mapaCoresHex[nomeCor] || '#cccccc';
+                btn.title = nomeCor; // Mostra o nome da cor ao passar o mouse
+                btn.setAttribute('data-color', nomeCor);
+                btn.onclick = () => filtrarCor(nomeCor);
+                containerCores.appendChild(btn);
+            });
+        }
+
+        function filtrarCor(cor) {
+            corAtual = cor;
+            // Gerencia a classe active tanto no botão "Todas" quanto nas bolinhas sólidas
+            document.querySelectorAll('#colors-tabs button').forEach(btn => {
+                if (btn.getAttribute('data-color') === cor) btn.classList.add('active');
                 else btn.classList.remove('active');
             });
             atualizarFiltrosERenderizar();
@@ -1646,12 +1742,13 @@
                 
                 const matchesCategoria = (categoriaAtual === 'Todos' || catItem === categoriaAtual);
                 const matchesTamanho = verificaTamanhoCompativel(p, tamanhoAtual);
+                const matchesCor = (corAtual === 'Todas') || p.variantes.some(v => v.cor.toLowerCase().includes(corAtual.toLowerCase()));
                 const matchesStatus = (statusFiltro === 'todos') || (statusFiltro === 'disponiveis' && !p.vendido) || (statusFiltro === 'vendidos' && p.vendido);
                 
                 const matchesPesquisa = p.nome.toLowerCase().includes(termoPesquisa.toLowerCase()) || 
                                         p.variantes.some(v => v.tamanho.toLowerCase().includes(termoPesquisa.toLowerCase()) || v.cor.toLowerCase().includes(termoPesquisa.toLowerCase()));
 
-                return matchesCategoria && matchesTamanho && matchesPesquisa && matchesStatus;
+                return matchesCategoria && matchesTamanho && matchesCor && matchesPesquisa && matchesStatus;
             });
             
             produtosFiltradosGlobais.sort(() => Math.random() - 0.5);
