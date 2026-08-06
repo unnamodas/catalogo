@@ -41,7 +41,7 @@
             background-color: var(--primary-color);
             color: #ffffff;
             padding: 10px 0;
-            font-size: 11px;
+            font-size: 8px;
             letter-spacing: 0.15em;
             font-weight: 400;
             text-transform: uppercase;
@@ -615,37 +615,66 @@
             margin-bottom: 20px;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 2px;
         }
 
-        .product-price-box {
-            display: flex;
-            align-items: baseline;
-            gap: 12px;
-        }
-
-        .price-old {
-            font-size: 15px;
-            color: #8a1f1a;
-            text-decoration: line-through;
-            text-decoration-color: #8a1f1a;
-            text-decoration-thickness: 2px;
+        /* --- CLASSE PARA O TEXTO MENOR (13px) --- */
+        .price-small {
+            font-size: 9.4px;
             font-weight: 500;
-            opacity: 0.85;
         }
 
-        .price-current {
-            font-size: 22px;
+        .price-total {
+            font-size: 13px;
+            color: var(--text-muted);
             font-weight: 600;
-            color: var(--text-main);
-            letter-spacing: 0.01em;
+
         }
 
-        .price-avista {
-            font-size: 14px;
+        .price-installments {
+            font-size: 17px;
+            /* Ajustado para 19px */
+            font-weight: 750;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+
+        .price-pix {
+            font-size: 15px;
+            /* Ajustado para 15px */
             font-weight: 700;
             color: #2e7d32;
             letter-spacing: 0.02em;
+        }
+
+        /* --- PREÇOS NO MODAL DE ZOOM --- */
+        .modal-price-total {
+            font-size: 13px;
+            color: #cccccc;
+            margin-bottom: 4px;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        .modal-price-installments {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 2px;
+            text-align: center;
+        }
+
+        .modal-price-pix {
+            font-size: 17px;
+            font-weight: 600;
+            color: #4caf50;
+            text-align: center;
+        }
+
+        .modal-price-installments .price-small,
+        .modal-price-pix .price-small {
+            font-size: 10.4px;
+            font-weight: 500;
         }
 
         @keyframes shimmer-effect {
@@ -869,29 +898,7 @@
             width: 100%;
         }
 
-        .modal-price-old {
-            font-size: 16px;
-            color: #ff857a;
-            text-decoration: line-through;
-            text-decoration-color: #ff857a;
-            text-decoration-thickness: 2px;
-            font-weight: 500;
-        }
 
-        .modal-price-current {
-            font-size: 26px;
-            font-weight: 700;
-            color: #ffffff;
-            letter-spacing: 0.02em;
-        }
-
-        .modal-price-avista {
-            font-size: 18px;
-            font-weight: 600;
-            color: #4caf50;
-            margin-top: 4px;
-            letter-spacing: 0.02em;
-        }
 
         .no-results {
             grid-column: 1 / -1;
@@ -2223,6 +2230,24 @@
             return valorInteiro + ',90';
         }
 
+        function calcularParcelamento(valorStr) {
+            // Converte o valor em texto "199,90" para número decimal
+            let valorNum = parseFloat(valorStr.replace('.', '').replace(',', '.'));
+            let parcelaMinima = 89.90;
+
+            // Calcula o máximo de parcelas possíveis
+            let maxParcelas = Math.floor(valorNum / parcelaMinima);
+
+            // Garante que será no mínimo 1 parcela (se a peça for mais barata que 89,90)
+            if (maxParcelas < 1) maxParcelas = 1;
+
+            // Calcula o valor exato da parcela e formata para o padrão R$
+            let valorParcela = (valorNum / maxParcelas).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // Adiciona o "até" e isola o "sem juros" na classe menor
+            return `<span class="price-small">até</span> ${maxParcelas}x de R$ ${valorParcela} <span class="price-small">(sem juros)</span>`;
+        }
+
         const ITENS_POR_CARREGAMENTO = 24;
         let indiceExibicaoAtual = 0;
         let carregandoMais = false;
@@ -2718,14 +2743,11 @@
                         </div>
                         
                         <div class="product-price-container">
-                            <div class="product-price-box">
-                                ${p.de && p.de !== '—' ? `<span class="price-old">R$ ${p.de}</span>` : ''}
-                                <span class="price-current">R$ ${p.por}</span>
-                            </div>
-                            <div class="price-avista">
-                                R$ ${calcularDesconto(p.por)} à vista (10% OFF)
-                            </div>
+                            <div class="price-total">R$ ${p.por}</div>
+                            <div class="price-installments">${calcularParcelamento(p.por)}</div>
+                            <div class="price-pix">R$ ${calcularDesconto(p.por)} <span class="price-small">no PIX (10% OFF)</span></div>
                         </div>
+
                         <div id="btn-container-${p.id}">
                             ${p.vendido ?
                         '<button class="btn-whatsapp btn-sold" disabled>Indisponível</button>' :
@@ -2841,11 +2863,11 @@
             modalCaption.textContent = `${produto.nome} - ${corObj.corOriginal} (Tam: ${stringTamanhosAtual})`;
 
             modalPrices.innerHTML = `
-                <div style="display: flex; align-items: baseline; gap: 12px;">
-                    ${produto.de && produto.de !== '—' ? `<span class="modal-price-old">R$ ${produto.de}</span>` : ''}
-                    <span class="modal-price-current">R$ ${produto.por}</span>
+                <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                    <div class="modal-price-total">R$ ${produto.por}</div>
+                    <div class="modal-price-installments">${calcularParcelamento(produto.por)}</div>
+                    <div class="modal-price-pix">R$ ${calcularDesconto(produto.por)} <span class="price-small">no PIX (10% OFF)</span></div>
                 </div>
-                <div class="modal-price-avista">R$ ${calcularDesconto(produto.por)} à vista (10% OFF)</div>
             `;
 
             const mensagemWhats = encodeURIComponent(`Olá, UNNA! Amei o "${produto.nome}" na cor ${corObj.corOriginal} (Tamanhos disponíveis: ${stringTamanhosAtual}) do catálogo. Gostaria de verificar a disponibilidade para compra!`);
