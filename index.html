@@ -610,71 +610,110 @@
             color: #000000;
         }
 
+        /* --- CONTAINER DE PREÇOS (Estilo Grife Premium) --- */
         .product-price-container {
             margin-top: auto;
             margin-bottom: 20px;
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 8px;
+            /* Respiro elegante entre as formas de pagamento */
+            border-top: 1px solid var(--border-color);
+            /* Linha divisória sutil que emoldura o preço */
+            padding-top: 16px;
         }
 
-        /* --- CLASSE PARA O TEXTO MENOR (13px) --- */
-        .price-small {
-            font-size: 9.4px;
-            font-weight: 500;
-        }
-
+        /* Valor base sutil e elegante */
         .price-total {
             font-size: 13px;
             color: var(--text-muted);
-            font-weight: 600;
-
-        }
-
-        .price-installments {
-            font-size: 17px;
-            /* Ajustado para 19px */
-            font-weight: 750;
-            color: var(--text-main);
-            letter-spacing: -0.02em;
-        }
-
-        .price-pix {
-            font-size: 15px;
-            /* Ajustado para 15px */
-            font-weight: 700;
-            color: #2e7d32;
+            font-weight: 400;
             letter-spacing: 0.02em;
         }
 
-        /* --- PREÇOS NO MODAL DE ZOOM --- */
+        /* Destaque do Parcelamento com números imponentes */
+        .price-installments {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+            letter-spacing: -0.01em;
+            display: flex;
+            flex-direction: column;
+            /* O próprio CSS joga o "sem juros" para baixo perfeitamente */
+            gap: 3px;
+        }
+
+        /* Micro-cópia em caixa alta (típico de marcas de luxo) */
+        .price-installments .price-small {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            /* Força o "SEM JUROS" ficar maiúsculo */
+            letter-spacing: 0.08em;
+        }
+
+        /* PIX com verde sofisticado e perfeitamente alinhado */
+        .price-pix {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1b4b27;
+            /* Verde escuro e fechado (mais chique) */
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .price-pix .price-small {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #2e7d32;
+        }
+
+        /* --- PREÇOS NO MODAL DE ZOOM (Acompanhando a nova identidade) --- */
         .modal-price-total {
-            font-size: 13px;
-            color: #cccccc;
-            margin-bottom: 4px;
-            font-weight: 400;
+            font-size: 14px;
+            color: #a0a0a0;
+            margin-bottom: 8px;
+            font-weight: 300;
             text-align: center;
         }
 
         .modal-price-installments {
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 600;
             color: #ffffff;
-            margin-bottom: 2px;
-            text-align: center;
+            margin-bottom: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .modal-price-installments .price-small {
+            font-size: 11px;
+            font-weight: 400;
+            color: #cccccc;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
 
         .modal-price-pix {
             font-size: 17px;
-            font-weight: 600;
+            font-weight: 500;
             color: #4caf50;
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 6px;
         }
 
-        .modal-price-installments .price-small,
         .modal-price-pix .price-small {
-            font-size: 10.4px;
-            font-weight: 500;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
         }
 
         @keyframes shimmer-effect {
@@ -1070,6 +1109,25 @@
 
             .destaque-tamanho {
                 font-size: 15px;
+            }
+
+            /* Ajuste fino da área de preços no celular */
+            .product-price-container {
+                padding-top: 10px;
+                gap: 6px;
+            }
+
+            .price-installments {
+                font-size: 16px;
+                /* Tamanho proporcional para tela de celular */
+            }
+
+            .price-pix {
+                font-size: 13px;
+            }
+
+            .price-pix .price-small {
+                font-size: 9px;
             }
 
             .price-current {
@@ -2244,8 +2302,8 @@
             // Calcula o valor exato da parcela e formata para o padrão R$
             let valorParcela = (valorNum / maxParcelas).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-            // Adiciona o "até" e isola o "sem juros" na classe menor
-            return `<span class="price-small">até</span> ${maxParcelas}x de R$ ${valorParcela} <span class="price-small">(sem juros)</span>`;
+            // O CSS agora faz a quebra de linha e gruda o texto
+            return `até ${maxParcelas}x de R$ ${valorParcela} <span class="price-small">sem juros</span>`;
         }
 
         const ITENS_POR_CARREGAMENTO = 24;
