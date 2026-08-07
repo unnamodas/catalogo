@@ -2290,7 +2290,7 @@
             },
             {
                 "id": 89,
-                "nome": "Blusa Estampada",
+                "nome": "Blusa Decote Geo",
                 "por": "179,90",
                 "vendido": false,
                 "destaque": false,
@@ -2323,6 +2323,103 @@
                     { "cor": "Bege", "tamanho": "46", "imagem": "fotos/blusa_13.jpg" },
                 ]
                 /* id código bling: 432724 rery */
+            },
+            {
+                "id": 91,
+                "nome": "Body",
+                "por": "119,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Branco", "tamanho": "Único", "imagem": "fotos/body_1.jpg" },
+                ]
+                /* id código bling: 61792 mvft */
+            },
+            {
+                "id": 92,
+                "nome": "Blusa Bababos",
+                "por": "179,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Preto", "tamanho": "50", "imagem": "fotos/blusa_15pre.jpg" },
+                ]
+                /* id código bling: 12674 pred */
+            },
+            {
+                "id": 93,
+                "nome": "Blusa",
+                "por": "179,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Azul", "tamanho": "46", "imagem": "fotos/blusa_14az.jpg" },
+                    { "cor": "Branco", "tamanho": "52", "imagem": "fotos/blusa_14bra.jpg" },
+                ]
+                /* id código bling: 2984 btori */
+            },
+            {
+                "id": 94,
+                "nome": "Blusa Flor",
+                "por": "199,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Branco", "tamanho": "46, 50", "imagem": "fotos/blusa_17.jpg" },
+                ]
+                /* id código bling: 13042 pred */
+            },
+            {
+                "id": 95,
+                "nome": "Blusa Detalhe Ombro",
+                "por": "179,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Amarelo", "tamanho": "46", "imagem": "fotos/blusa_15.jpg" },
+                ]
+                /* id código bling: 12893 pred */
+            },
+            {
+                "id": 96,
+                "nome": "Blusa Gota",
+                "por": "189,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Bordô", "tamanho": "44", "imagem": "fotos/blusa_16.jpg" },
+                ]
+                /* id código bling: 130150 pred */
+            },
+            {
+                "id": 98,
+                "nome": "Blusa Babado",
+                "por": "197,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Vermelho", "tamanho": "46, 54", "imagem": "fotos/blusa_18.jpg" },
+                ]
+                /* id código bling: 125690 pred */
+            },
+            {
+                "id": 99,
+                "nome": "Blusa Babado Transversal",
+                "por": "187,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Bege", "tamanho": "50", "imagem": "fotos/blusa_19.jpg" },
+                ]
+                /* id código bling: babado transversal pred */
             },
 
 
@@ -2826,7 +2923,7 @@
                         
                         ${p.desconto > 0 && !p.vendido ? `<span class="badge badge-discount" style="${p.novidade ? 'top: 50px;' : ''}">-${p.desconto}%</span>` : ''}
                         
-                        <div class="carousel-track" id="track-${p.id}" style="transform: translateX(-${window.estadoFotosCard[p.id] * 100}%);">
+                        <div class="carousel-track" id="track-${p.id}">
                             ${trackImagensHtml}
                         </div>
                         
