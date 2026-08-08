@@ -1222,6 +1222,40 @@
                 padding: 4px 8px;
             }
         }
+
+        /* --- ESTILOS EXCLUSIVOS DA LIQUIDAÇÃO --- */
+        .sale-price-box {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-top: 14px;
+            margin-bottom: 20px;
+        }
+
+        .price-old {
+            font-size: 14px;
+            color: #999999;
+            text-decoration: line-through;
+            font-weight: 600;
+        }
+
+        .price-current {
+            font-size: 26px;
+            font-weight: 700;
+            color: #000000;
+            letter-spacing: -0.02em;
+        }
+
+        .btn-liquidacao {
+            color: #d93025 !important;
+            font-weight: 700 !important;
+        }
+
+        .btn-liquidacao.active {
+            background-color: #d93025 !important;
+            color: #ffffff !important;
+            border-color: #d93025 !important;
+        }
     </style>
 </head>
 
@@ -1252,1719 +1286,2481 @@
                         oninput="lidarBusca(this.value)">
                 </div>
                 <div class="status-filters">
-                    <button class="status-btn active" id="status-todos" onclick="filtrarStatus('todos')">Ver
-                        Tudo</button>
-                    <button class="status-btn" id="status-disponiveis"
-                        onclick="filtrarStatus('disponiveis')">Disponíveis</button>
-                    <button class="status-btn" id="status-vendidos"
-                        onclick="filtrarStatus('vendidos')">Esgotados</button>
+                    <button class="status-btn active" id="status-todos"
+                        onclick="filtrarStatus('todos')">Principal</button>
+                    <button class="status-btn btn-liquidacao" id="status-liquidacao" onclick="abrirLiquidacao()">💥
+                        LIQUIDAÇÃO</button>
+                </div>
+
+                <div class="categories-tabs" id="categories-tabs"></div>
+
+                <div class="sizes-container" style="border-top: none; margin-top: 5px; padding-top: 5px;">
+                    <span class="size-label">Cor:</span>
+                    <div class="sizes-tabs" id="colors-tabs"></div>
+                </div>
+
+                <div class="sizes-container">
+                    <span class="size-label">Tamanho:</span>
+                    <div class="sizes-tabs" id="sizes-tabs"></div>
                 </div>
             </div>
 
-            <div class="categories-tabs" id="categories-tabs"></div>
-
-            <div class="sizes-container" style="border-top: none; margin-top: 5px; padding-top: 5px;">
-                <span class="size-label">Cor:</span>
-                <div class="sizes-tabs" id="colors-tabs"></div>
+            <div class="results-info-row">
+                <div class="results-counter" id="results-counter">Carregando catálogo...</div>
             </div>
 
-            <div class="sizes-container">
-                <span class="size-label">Tamanho:</span>
-                <div class="sizes-tabs" id="sizes-tabs"></div>
+            <div class="product-grid" id="product-grid"></div>
+
+            <div id="scroll-status" class="scroll-status">Carregando mais peças...</div>
+        </div>
+
+        <div id="image-modal" class="modal-overlay" onclick="fecharModal(event)">
+            <div class="modal-content">
+                <span class="modal-close" onclick="fecharModal(event)">&times;</span>
+                <img id="modal-img" src="" alt="Peça ampliada">
+                <div class="modal-info-box">
+                    <div id="modal-caption" class="modal-caption"></div>
+                    <div id="modal-prices" class="modal-prices"></div>
+                    <div id="modal-btn-container" style="width: 100%;"></div>
+                </div>
             </div>
         </div>
 
-        <div class="results-info-row">
-            <div class="results-counter" id="results-counter">Carregando catálogo...</div>
-        </div>
+        <footer>
+            <p>&copy; 2026 UNNA Modas.</p>
+        </footer>
 
-        <div class="product-grid" id="product-grid"></div>
+        <script>
+            const WHATSAPP_NUMERO = "5579999749647";
 
-        <div id="scroll-status" class="scroll-status">Carregando mais peças...</div>
-    </div>
+            // --- ESTRUTURA DE PRODUTOS COM VARIANTES ---
+            const produtos = [
+                {
+                    "id": 1,
+                    "nome": "Blusa Detalhe",
+                    "por": "179,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Bordô", "tamanho": "48", "imagem": "fotos/blusa_13066vi.jpg" },
+                        { "cor": "Preto", "tamanho": "46", "imagem": "fotos/blusa_13066pre.jpg" }
+                    ]
+                },
 
-    <div id="image-modal" class="modal-overlay" onclick="fecharModal(event)">
-        <div class="modal-content">
-            <span class="modal-close" onclick="fecharModal(event)">&times;</span>
-            <img id="modal-img" src="" alt="Peça ampliada">
-            <div class="modal-info-box">
-                <div id="modal-caption" class="modal-caption"></div>
-                <div id="modal-prices" class="modal-prices"></div>
-                <div id="modal-btn-container" style="width: 100%;"></div>
-            </div>
-        </div>
-    </div>
+                {
+                    "id": 2,
+                    "nome": "Camisa lisa",
+                    "por": "229,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Branco", "tamanho": "48, 52", "imagem": "fotos/camisa_13054f2.jpg" },
+                        { "cor": "Branco", "tamanho": "48, 52", "imagem": "fotos/camisa_13054.jpg" },
+                    ]
+                },
 
-    <footer>
-        <p>&copy; 2026 UNNA Modas.</p>
-    </footer>
+                {
+                    "id": 3,
+                    "nome": "Blusa linho",
+                    "por": "179,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Azul marinho", "tamanho": "44", "imagem": "fotos/blusa_13068am.jpg", "vendido": true },
+                        { "cor": "Verde oliva", "tamanho": "54", "imagem": "fotos/blusa_13068vo.jpg" },
+                    ]
+                },
 
-    <script>
-        const WHATSAPP_NUMERO = "5579999749647";
+                {
+                    "id": 4,
+                    "nome": "Vestido longo",
+                    "por": "279,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Bordô", "tamanho": "48, 50", "imagem": "fotos/vestido_13021vi.jpg" },
+                        { "cor": "Preto", "tamanho": "46, 48, 50", "imagem": "fotos/vestido_13021pre.jpg" },
+                    ]
+                },
 
-        // --- ESTRUTURA DE PRODUTOS COM VARIANTES ---
-        const produtos = [
-            {
-                "id": 1,
-                "nome": "Blusa Detalhe",
-                "por": "179,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Bordô", "tamanho": "48", "imagem": "fotos/blusa_13066vi.jpg" },
-                    { "cor": "Preto", "tamanho": "46", "imagem": "fotos/blusa_13066pre.jpg" }
-                ]
-            },
+                {
+                    "id": 5,
+                    "nome": "Blusa fivela",
+                    "por": "179,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "50", "imagem": "fotos/blusa_13073.jpg" },
+                    ]
+                },
 
-            {
-                "id": 2,
-                "nome": "Camisa lisa",
-                "por": "229,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Branco", "tamanho": "48, 52", "imagem": "fotos/camisa_13054f2.jpg" },
-                    { "cor": "Branco", "tamanho": "48, 52", "imagem": "fotos/camisa_13054.jpg" },
-                ]
-            },
+                {
+                    "id": 6,
+                    "nome": "Blusa lisa manga 7/8",
+                    "por": "179,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Azul marinho", "tamanho": "46, 54", "imagem": "fotos/blusa_13077am.jpg" },
+                        { "cor": "Bordô", "tamanho": "44, 48, 52", "imagem": "fotos/blusa_13077vi.jpg" },
+                    ]
+                },
 
-            {
-                "id": 3,
-                "nome": "Blusa linho",
-                "por": "179,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Azul marinho", "tamanho": "44", "imagem": "fotos/blusa_13068am.jpg", "vendido": true },
-                    { "cor": "Verde oliva", "tamanho": "54", "imagem": "fotos/blusa_13068vo.jpg" },
-                ]
-            },
+                {
+                    "id": 7,
+                    "nome": "Colete",
+                    "por": "189,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "46, 48, 50", "imagem": "fotos/colete_12994.jpg" },
+                        { "cor": "Preto", "tamanho": "46, 48, 50", "imagem": "fotos/colete_12994f2.jpg" },
+                    ]
+                },
 
-            {
-                "id": 4,
-                "nome": "Vestido longo",
-                "por": "279,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Bordô", "tamanho": "48, 50", "imagem": "fotos/vestido_13021vi.jpg" },
-                    { "cor": "Preto", "tamanho": "46, 48, 50", "imagem": "fotos/vestido_13021pre.jpg" },
-                ]
-            },
+                {
+                    "id": 8,
+                    "nome": "Calça pantalona",
+                    "por": "279,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "46, 48, 50", "imagem": "fotos/calca_13018.jpg" },
+                    ]
+                },
 
-            {
-                "id": 5,
-                "nome": "Blusa fivela",
-                "por": "179,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "50", "imagem": "fotos/blusa_13073.jpg" },
-                ]
-            },
+                {
+                    "id": 9,
+                    "nome": "Conjunto prespontado",
+                    "por": "279,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Marrom", "tamanho": "50, 52", "imagem": "fotos/conjunto_13011ma.jpg" },
+                        { "cor": "Marrom", "tamanho": "50, 52", "imagem": "fotos/conjunto_13011ma2.jpg" },
+                        { "cor": "Bege", "tamanho": "46", "imagem": "fotos/conjunto_13011be.jpg", "vendido": true },
+                        { "cor": "Bege", "tamanho": "46", "imagem": "fotos/conjunto_13011be2.jpg", "vendido": true },
+                    ]
+                },
 
-            {
-                "id": 6,
-                "nome": "Blusa lisa manga 7/8",
-                "por": "179,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Azul marinho", "tamanho": "46, 54", "imagem": "fotos/blusa_13077am.jpg" },
-                    { "cor": "Bordô", "tamanho": "44, 48, 52", "imagem": "fotos/blusa_13077vi.jpg" },
-                ]
-            },
+                {
+                    "id": 10,
+                    "nome": "Vestido moletinho",
+                    "por": "229,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "P, M, GG", "imagem": "fotos/vestido_140wany.jpg" },
+                    ]
+                },
+                {
+                    "id": 11,
+                    "nome": "Vestido midi",
+                    "por": "289,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Bege", "tamanho": "46, 48, 52", "imagem": "fotos/vestido_151941dc.jpg" },
+                        { "cor": "Bege", "tamanho": "46, 48, 52", "imagem": "fotos/vestido_151941dcf2.jpg" },
+                        { "cor": "Bege", "tamanho": "46, 48, 52", "imagem": "fotos/vestido_151941dcf3.jpg" },
+                    ]
+                },
+                {
+                    "id": 12,
+                    "nome": "Vestido midi",
+                    "por": "289,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "46, 48, 50, 52", "imagem": "fotos/vestido_151966dc.jpg" },
+                        { "cor": "Preto", "tamanho": "46, 48, 50, 52", "imagem": "fotos/vestido_151966dcf2.jpg" },
+                        { "cor": "Preto", "tamanho": "46, 48, 50, 52", "imagem": "fotos/vestido_151966dcf3.jpg" },
+                    ]
+                },
+                {
+                    "id": 12,
+                    "nome": "Vestido midi",
+                    "por": "289.90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "44, 48, 50", "imagem": "fotos/vestido_151973dc.jpg" },
+                        { "cor": "Preto", "tamanho": "44, 48, 50", "imagem": "fotos/vestido_151973dcf2.jpg" },
+                        { "cor": "Preto", "tamanho": "44, 48, 50", "imagem": "fotos/vestido_151973dcf3.jpg" },
+                    ]
+                },
 
-            {
-                "id": 7,
-                "nome": "Colete",
-                "por": "189,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "46, 48, 50", "imagem": "fotos/colete_12994.jpg" },
-                    { "cor": "Preto", "tamanho": "46, 48, 50", "imagem": "fotos/colete_12994f2.jpg" },
-                ]
-            },
+                {
+                    "id": 13,
+                    "nome": "Vestido midi",
+                    "por": "259,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "44, 46, 48, 50", "imagem": "fotos/vestido_151067dc.jpg" },
+                        { "cor": "Preto", "tamanho": "44, 46, 48, 50", "imagem": "fotos/vestido_151067dcf2.jpg" },
+                        { "cor": "Preto", "tamanho": "44, 46, 48, 50", "imagem": "fotos/vestido_151067dcf3.jpg" },
+                    ]
+                },
+                {
+                    "id": 14,
+                    "nome": "Blusa detalhe",
+                    "por": "169,90",
+                    "vendido": true,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Marrom", "tamanho": "48", "imagem": "fotos/blusa_13064.jpg" },
+                    ]
+                },
+                {
+                    "id": 15,
+                    "nome": "Bermuda",
+                    "por": "199,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "48, 50", "imagem": "fotos/bermuda_241wany.jpg" },
+                    ]
+                },
+                {
+                    "id": 16,
+                    "nome": "Vestido longo",
+                    "por": "529,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Azul marinho", "tamanho": "50", "imagem": "fotos/vestido_1.jpg" },
+                    ]
+                },
+                {
+                    "id": 17,
+                    "nome": "Vestido longo",
+                    "por": "589,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Bordô", "tamanho": "48", "imagem": "fotos/vestido_2.jpg" },
+                    ]
+                },
+                {
+                    "id": 18,
+                    "nome": "Vestido longo",
+                    "por": "419,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Azul", "tamanho": "G2", "imagem": "fotos/vestido_3.jpg" },
+                    ]
+                },
+                {
+                    "id": 19,
+                    "nome": "Vestido longo",
+                    "por": "429,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Bege", "tamanho": "50", "imagem": "fotos/vestido_4.jpg" },
+                    ]
+                },
+                {
+                    "id": 20,
+                    "nome": "Vestido longo",
+                    "por": "539,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Azul", "tamanho": "52", "imagem": "fotos/vestido_5az.jpg" },
+                        { "cor": "Fúcsia", "tamanho": "50", "imagem": "fotos/vestido_5fuc.jpg" },
+                        { "cor": "Rosa", "tamanho": "48", "imagem": "fotos/vestido_5ros.jpg" },
+                    ]
+                },
+                {
+                    "id": 21,
+                    "nome": "Vestido longo",
+                    "por": "549,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Rosa", "tamanho": "50", "imagem": "fotos/vestido_6.jpg" },
+                    ]
+                },
+                {
+                    "id": 22,
+                    "nome": "Vestido longo",
+                    "por": "489,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Rosa", "tamanho": "52", "imagem": "fotos/vestido_7ros.jpg" },
+                        { "cor": "Verde", "tamanho": "50", "imagem": "fotos/vestido_7ver.jpg" },
+                    ]
+                },
+                {
+                    "id": 23,
+                    "nome": "Vestido longo",
+                    "por": "489,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Terracota", "tamanho": "52", "imagem": "fotos/vestido_8.jpg" },
+                    ]
+                },
+                {
+                    "id": 24,
+                    "nome": "Vestido longo",
+                    "por": "379,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Bege", "tamanho": "46", "imagem": "fotos/vestido_9.jpg" },
+                    ]
+                },
+                {
+                    "id": 25,
+                    "nome": "Vestido longo",
+                    "por": "419,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Bordô", "tamanho": "G2", "imagem": "fotos/vestido_10.jpg" },
+                    ]
+                },
+                {
+                    "id": 26,
+                    "nome": "Vestido longo",
+                    "por": "499,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Verde", "tamanho": "46", "imagem": "fotos/vestido_11.jpg" },
+                    ]
+                },
+                {
+                    "id": 27,
+                    "nome": "Vestido longo",
+                    "por": "499,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Azul marinho", "tamanho": "50", "imagem": "fotos/vestido_12az.jpg" },
+                        { "cor": "Bordô", "tamanho": "48", "imagem": "fotos/vestido_12bor.jpg" },
+                    ]
+                },
+                {
+                    "id": 28,
+                    "nome": "Vestido longo",
+                    "por": "489,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Rosa", "tamanho": "46", "imagem": "fotos/vestido_13.jpg" },
+                    ]
+                },
+                {
+                    "id": 29,
+                    "nome": "Vestido curto",
+                    "por": "379,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Terracota", "tamanho": "44", "imagem": "fotos/vestido_14ter.jpg" },
+                        { "cor": "Bordô", "tamanho": "46, 50", "imagem": "fotos/vestido_14bor.jpg" },
+                    ]
+                },
+                {
+                    "id": 30,
+                    "nome": "Vestido curto",
+                    "por": "389,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "46, 50", "imagem": "fotos/vestido_15pre.jpg" },
+                        { "cor": "Branco", "tamanho": "48, 50", "imagem": "fotos/vestido_15br.jpg" },
+                        { "cor": "Bordô", "tamanho": "44, 48, 50", "imagem": "fotos/vestido_15bor.jpg" },
+                    ]
+                },
+                {
+                    "id": 31,
+                    "nome": "Vestido longo",
+                    "por": "389,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Branco", "tamanho": "52", "imagem": "fotos/vestido_16.jpg" },
+                    ]
+                },
+                {
+                    "id": 32,
+                    "nome": "Vestido longo",
+                    "por": "419,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Verde", "tamanho": "G2", "imagem": "fotos/vestido_17.jpg" },
+                    ]
+                },
+                {
+                    "id": 33,
+                    "nome": "Vestido longo",
+                    "por": "499,90",
+                    "vendido": true,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Terracota", "tamanho": "46", "imagem": "fotos/vestido_19.jpg" },
+                    ]
+                },
+                {
+                    "id": 34,
+                    "nome": "Vestido longo",
+                    "por": "559,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Bordô", "tamanho": "48", "imagem": "fotos/vestido_20.jpg" },
+                    ]
+                },
+                {
+                    "id": 35,
+                    "nome": "Vestido midi",
+                    "por": "329,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Marrom", "tamanho": "48", "imagem": "fotos/vestido_21mar.jpg" },
+                        { "cor": "Terracota", "tamanho": "46", "imagem": "fotos/vestido_21ter.jpg" },
+                    ]
+                },
+                {
+                    "id": 36,
+                    "nome": "Vestido midi",
+                    "por": "369,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Marrom", "tamanho": "46, 50", "imagem": "fotos/vestido_22mar.jpg" },
+                        { "cor": "Bordô", "tamanho": "44, 48", "imagem": "fotos/vestido_22bor.jpg" },
+                        { "cor": "Preto", "tamanho": "48", "imagem": "fotos/vestido_22pre.jpg" },
+                    ]
+                },
+                {
+                    "id": 37,
+                    "nome": "Vestido midi",
+                    "por": "389,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Bege", "tamanho": "46, 48", "imagem": "fotos/vestido_23.jpg" },
+                        { "cor": "Bege", "tamanho": "46, 48", "imagem": "fotos/vestido_23dt.jpg" },
+                    ]
+                },
+                {
+                    "id": 38,
+                    "nome": "Vestido midi",
+                    "por": "339,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Azul", "tamanho": "46", "imagem": "fotos/vestido_24az.jpg" },
+                        { "cor": "Bordô", "tamanho": "44, 48", "imagem": "fotos/vestido_24bor.jpg" },
+                        { "cor": "Preto", "tamanho": "52", "imagem": "fotos/vestido_24pre.jpg" },
+                    ]
+                },
+                {
+                    "id": 39,
+                    "nome": "Vestido midi",
+                    "por": "339,90",
+                    "vendido": true,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "48", "imagem": "fotos/vestido_25.jpg" },
+                        { "cor": "Preto", "tamanho": "48", "imagem": "fotos/vestido_25dt.jpg" },
+                    ]
+                },
+                {
+                    "id": 40,
+                    "nome": "Vestido midi",
+                    "por": "339,90",
+                    "vendido": true,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "48", "imagem": "fotos/vestido_26.jpg" },
+                    ]
+                },
+                {
+                    "id": 41,
+                    "nome": "Vestido midi",
+                    "por": "229,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Bordô", "tamanho": "44", "imagem": "fotos/vestido_27.jpg" },
+                    ]
+                },
+                {
+                    "id": 42,
+                    "nome": "Vestido curto",
+                    "por": "579,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Branco", "tamanho": "46, 50, 54", "imagem": "fotos/vestido_28.jpg" },
+                        { "cor": "Branco", "tamanho": "46, 50, 54", "imagem": "fotos/vestido_28dt.jpg" },
+                    ]
+                },
+                {
+                    "id": 43,
+                    "nome": "Vestido longo",
+                    "por": "389,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Branco", "tamanho": "50", "imagem": "fotos/vestido_29bra.jpg" },
+                        { "cor": "Amarelo", "tamanho": "52", "imagem": "fotos/vestido_29ama.jpg" },
+                        { "cor": "Vermelho", "tamanho": "54", "imagem": "fotos/vestido_29verm.jpg" },
+                    ]
+                },
+                {
+                    "id": 44,
+                    "nome": "Conjunto",
+                    "por": "549,80",
+                    "precos_separados": [
+                        { "peca": "Blusa", "valor": "219,90" },
+                        { "peca": "Saia", "valor": "329,90" }
+                    ],
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "GG, G1", "imagem": "fotos/conjunto_1.jpg" }
+                    ]
+                },
+                {
+                    "id": 45,
+                    "nome": "Vestido midi",
+                    "por": "399,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Vermelho", "tamanho": "46/48/50", "imagem": "fotos/vestido_30.jpg" },
+                    ]
+                },
+                {
+                    "id": 46,
+                    "nome": "Vestido midi",
+                    "por": "249,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Branco", "tamanho": "46/48/50", "imagem": "fotos/vestido_31.jpg" },
+                    ]
+                    /* id 32 código bling: 11831 pred */
+                },
+                {
+                    "id": 47,
+                    "nome": "Vestido longo",
+                    "por": "379,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Azul", "tamanho": "46", "imagem": "fotos/vestido_33.jpg" },
+                    ]
+                },
+                {
+                    "id": 48,
+                    "nome": "Vestido longo",
+                    "por": "529,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "variantes": [
+                        { "cor": "Verde", "tamanho": "46", "imagem": "fotos/vestido_34.jpg" },
+                    ]
+                },
+                {
+                    "id": 49,
+                    "nome": "Vestido longo",
+                    "por": "539,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Verde Oliva", "tamanho": "46", "imagem": "fotos/vestido_35ver.jpg" },
+                        { "cor": "Terracota", "tamanho": "GG", "imagem": "fotos/vestido_35ter.jpg" },
+                        { "cor": "Bordô", "tamanho": "GG", "imagem": "fotos/vestido_35bor.jpg" },
+                    ]
+                    /* id 36 código bling: 50560 yni */
+                },
+                {
+                    "id": 50,
+                    "nome": "Vestido longo",
+                    "por": "569,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Terracota", "tamanho": "50, 52", "imagem": "fotos/vestido_36ter.jpg" },
+                        { "cor": "Bordô", "tamanho": "46, 50, 52", "imagem": "fotos/vestido_36bor.jpg" },
+                    ]
+                    /* id 37 código bling: 23130 yni */
+                },
+                {
+                    "id": 51,
+                    "nome": "Vestido longo",
+                    "por": "369,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Bordô", "tamanho": "50", "imagem": "fotos/vestido_37.jpg", "vendido": true },
+                        { "cor": "Verde", "tamanho": "GG", "imagem": "fotos/vestido_37ver.jpg" },
+                    ]
+                    /* id 38 código bling: 41460 yni */
+                },
+                {
+                    "id": 52,
+                    "nome": "Vestido longo",
+                    "por": "569,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Azul Petróleo", "tamanho": "48, 50", "imagem": "fotos/vestido_38.jpg" },
+                    ]
+                    /* id 39 código bling: 50000 yni */
+                },
+                {
+                    "id": 53,
+                    "nome": "Vestido longo",
+                    "por": "499,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Azul Petróleo", "tamanho": "46, 48, 50, 52", "imagem": "fotos/vestido_39.jpg" },
+                    ]
+                    /* id 40 código bling: 23140 yni*/
+                },
+                {
+                    "id": 54,
+                    "nome": "Vestido midi",
+                    "por": "299,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Azul", "tamanho": "48", "imagem": "fotos/vestido_40az.jpg" },
+                        { "cor": "Preto", "tamanho": "50", "imagem": "fotos/vestido_40pre.jpg" },
+                    ]
+                    /* id 40 código bling: 150901 dc */
+                },
+                {
+                    "id": 55,
+                    "nome": "Vestido midi",
+                    "por": "319,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Bordô", "tamanho": "48, 52", "imagem": "fotos/vestido_41.jpg" },
+                    ]
+                    /* id 40 código bling: 151034 dc */
+                },
+                {
+                    "id": 56,
+                    "nome": "Vestido midi",
+                    "por": "239,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Azul Petróleo", "tamanho": "46", "imagem": "fotos/vestido_42.jpg" },
+                    ]
+                    /* id 40 código bling: 151266 dc */
+                },
+                {
+                    "id": 57,
+                    "nome": "Vestido midi",
+                    "por": "399,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "48", "imagem": "fotos/vestido_43.jpg" },
+                    ]
+                    /* id 40 código bling: 13008 pred */
+                },
+                {
+                    "id": 58,
+                    "nome": "Vestido curto",
+                    "por": "249,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "46, 50", "imagem": "fotos/vestido_44.jpg" },
+                    ]
+                    /* id 40 código bling: 2646 elaves */
+                },
+                {
+                    "id": 59,
+                    "nome": "Vestido midi",
+                    "por": "249,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Azul", "tamanho": "48", "imagem": "fotos/vestido_45az.jpg" },
+                        { "cor": "Rosa", "tamanho": "46", "imagem": "fotos/vestido_45ros.jpg" },
+                    ]
+                    /* id 40 código bling: 350120 alp */
+                },
+                {
+                    "id": 60,
+                    "nome": "Vestido midi",
+                    "por": "329,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Terracota", "tamanho": "48", "imagem": "fotos/vestido_46.jpg" },
+                    ]
+                    /* id 40 código bling: 42375 maza */
+                },
+                {
+                    "id": 61,
+                    "nome": "Vestido midi",
+                    "por": "329,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Marrom", "tamanho": "48, 50", "imagem": "fotos/vestido_47.jpg" },
+                    ]
+                    /* id 40 código bling: 42457 maza */
+                },
+                {
+                    "id": 62,
+                    "nome": "Vestido midi",
+                    "por": "329,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Branco", "tamanho": "G", "imagem": "fotos/vestido_48.jpg" },
+                    ]
+                    /* id 40 código bling: 047066 vf */
+                },
+                {
+                    "id": 63,
+                    "nome": "Vestido midi",
+                    "por": "289,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Azul", "tamanho": "M, GG", "imagem": "fotos/vestido_49.jpg" },
+                    ]
+                    /* id 40 código bling: 295 wany */
+                },
+                {
+                    "id": 64,
+                    "nome": "Vestido midi",
+                    "por": "319,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "54", "imagem": "fotos/vestido_50pre.jpg" },
+                        { "cor": "Verde", "tamanho": "48, 52", "imagem": "fotos/vestido_50ver.jpg" },
+                    ]
+                    /* id 40 código bling: 42437 maza */
+                },
+                {
+                    "id": 65,
+                    "nome": "Vestido longo",
+                    "por": "289,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Rosa", "tamanho": "44", "imagem": "fotos/vestido_51.jpg" },
+                    ]
+                    /* id 40 código bling: 3617 kay */
+                },
+                {
+                    "id": 67,
+                    "nome": "Vestido midi",
+                    "por": "199,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Marrom", "tamanho": "Único slim", "imagem": "fotos/vestido_52mar.jpg" },
+                        { "cor": "Preto", "tamanho": "Único slim", "imagem": "fotos/vestido_52pre.jpg" },
+                        { "cor": "Bege", "tamanho": "Único slim", "imagem": "fotos/vestido_52beg.jpg" },
+                    ]
+                    /* id código bling: clara slim tina */
+                },
+                {
+                    "id": 68,
+                    "nome": "Vestido longo",
+                    "por": "239,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Bordô", "tamanho": "Único slim", "imagem": "fotos/vestido_53.jpg" },
+                    ]
+                    /* id código bling: Vestido rafaela est longo tina */
+                },
+                {
+                    "id": 69,
+                    "nome": "Vestido midi",
+                    "por": "229,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Amarelo", "tamanho": "46", "imagem": "fotos/vestido_54.jpg" },
+                    ]
+                    /* id código bling: 6120 tuba */
+                },
+                {
+                    "id": 70,
+                    "nome": "Vestido midi",
+                    "por": "199,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Azul", "tamanho": "46, 50", "imagem": "fotos/vestido_55.jpg" },
+                    ]
+                    /* id código bling: liso 312 elaves */
+                },
+                {
+                    "id": 71,
+                    "nome": "Vestido midi",
+                    "por": "199,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Amarelo", "tamanho": "44, 46, 48", "imagem": "fotos/vestido_56.jpg" },
+                    ]
+                    /* id código bling:  folha 900868 join */
+                },
+                {
+                    "id": 72,
+                    "nome": "Vestido midi",
+                    "por": "299,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Amarelo", "tamanho": "46", "imagem": "fotos/vestido_57.jpg" },
+                    ]
+                    /* id código bling:  25270 elaves */
+                },
+                {
+                    "id": 73,
+                    "nome": "Vestido curto",
+                    "por": "299,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Rosa", "tamanho": "48, 52", "imagem": "fotos/vestido_58.jpg" },
+                    ]
+                    /* id código bling:   900854 join */
+                },
+                {
+                    "id": 74,
+                    "nome": "Vestido midi",
+                    "por": "329,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Verde", "tamanho": "50", "imagem": "fotos/vestido_59ver.jpg" },
+                        { "cor": "Azul", "tamanho": "52", "imagem": "fotos/vestido_59az.jpg" },
+                    ]
+                    /* id código bling: 12969 pred */
+                },
+                {
+                    "id": 75,
+                    "nome": "Blusa detalhe manga",
+                    "por": "189,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": true,
+                    "variantes": [
+                        { "cor": "Bege", "tamanho": "48, 50", "imagem": "fotos/blusa_1beg.jpg" },
+                        { "cor": "Bege", "tamanho": "48, 50", "imagem": "fotos/blusa_1beg2.jpg" },
+                        { "cor": "Preto", "tamanho": "46", "imagem": "fotos/blusa_1pre.jpg" },
+                    ]
+                    /* id código bling: 13084 pred */
+                },
+                {
+                    "id": 76,
+                    "nome": "Calça sarja",
+                    "por": "249,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": true,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "44, 46, 48, 50", "imagem": "fotos/calca_1.jpg" },
+                    ]
+                    /* id código bling: 13090 pred */
+                },
+                {
+                    "id": 77,
+                    "nome": "Blusa detalhe laise",
+                    "por": "197,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": true,
+                    "variantes": [
+                        { "cor": "Branco", "tamanho": "44, 46, 48", "imagem": "fotos/blusa_2.jpg" },
+                        { "cor": "Branco", "tamanho": "44, 46, 48", "imagem": "fotos/blusa_2f2.jpg" },
+                    ]
+                    /* id código bling: 13095 pred */
+                },
+                {
+                    "id": 78,
+                    "nome": "Blusa decote v",
+                    "por": "217,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": true,
+                    "variantes": [
+                        { "cor": "Branco (Off White)", "tamanho": "46, 48, 50", "imagem": "fotos/blusa_3off.jpg" },
+                        { "cor": "Branco (Off White)", "tamanho": "46, 48, 50", "imagem": "fotos/blusa_3off2.jpg" },
+                        { "cor": "Azul marinho", "tamanho": "44, 46", "imagem": "fotos/blusa_3az.jpg" },
+                    ]
+                    /* id código bling: 13088 pred */
+                },
+                {
+                    "id": 79,
+                    "nome": "Calça pantalona",
+                    "por": "287,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": true,
+                    "variantes": [
+                        { "cor": "Branco (Off White)", "tamanho": "46, 48, 50", "imagem": "fotos/calca_2.jpg" },
+                        { "cor": "Branco (Off White)", "tamanho": "46, 48, 50", "imagem": "fotos/calca_2ft2.jpg" },
 
-            {
-                "id": 8,
-                "nome": "Calça pantalona",
-                "por": "279,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "46, 48, 50", "imagem": "fotos/calca_13018.jpg" },
-                ]
-            },
+                    ]
+                    /* id código bling: 13097 pred */
+                },
+                {
+                    "id": 80,
+                    "nome": "Blusa detalhe gola",
+                    "por": "189,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": true,
+                    "variantes": [
+                        { "cor": "Bege", "tamanho": "46, 50", "imagem": "fotos/blusa_4beg.jpg" },
+                        { "cor": "Azul marinho", "tamanho": "48, 52", "imagem": "fotos/blusa_4az.jpg" },
 
-            {
-                "id": 9,
-                "nome": "Conjunto prespontado",
-                "por": "279,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Marrom", "tamanho": "50, 52", "imagem": "fotos/conjunto_13011ma.jpg" },
-                    { "cor": "Marrom", "tamanho": "50, 52", "imagem": "fotos/conjunto_13011ma2.jpg" },
-                    { "cor": "Bege", "tamanho": "46", "imagem": "fotos/conjunto_13011be.jpg", "vendido": true },
-                    { "cor": "Bege", "tamanho": "46", "imagem": "fotos/conjunto_13011be2.jpg", "vendido": true },
-                ]
-            },
-
-            {
-                "id": 10,
-                "nome": "Vestido moletinho",
-                "por": "229,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "P, M, GG", "imagem": "fotos/vestido_140wany.jpg" },
-                ]
-            },
-            {
-                "id": 11,
-                "nome": "Vestido midi",
-                "por": "289,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Bege", "tamanho": "46, 48, 52", "imagem": "fotos/vestido_151941dc.jpg" },
-                    { "cor": "Bege", "tamanho": "46, 48, 52", "imagem": "fotos/vestido_151941dcf2.jpg" },
-                    { "cor": "Bege", "tamanho": "46, 48, 52", "imagem": "fotos/vestido_151941dcf3.jpg" },
-                ]
-            },
-            {
-                "id": 12,
-                "nome": "Vestido midi",
-                "por": "289,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "46, 48, 50, 52", "imagem": "fotos/vestido_151966dc.jpg" },
-                    { "cor": "Preto", "tamanho": "46, 48, 50, 52", "imagem": "fotos/vestido_151966dcf2.jpg" },
-                    { "cor": "Preto", "tamanho": "46, 48, 50, 52", "imagem": "fotos/vestido_151966dcf3.jpg" },
-                ]
-            },
-            {
-                "id": 12,
-                "nome": "Vestido midi",
-                "por": "289.90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "44, 48, 50", "imagem": "fotos/vestido_151973dc.jpg" },
-                    { "cor": "Preto", "tamanho": "44, 48, 50", "imagem": "fotos/vestido_151973dcf2.jpg" },
-                    { "cor": "Preto", "tamanho": "44, 48, 50", "imagem": "fotos/vestido_151973dcf3.jpg" },
-                ]
-            },
-
-            {
-                "id": 13,
-                "nome": "Vestido midi",
-                "por": "259,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "44, 46, 48, 50", "imagem": "fotos/vestido_151067dc.jpg" },
-                    { "cor": "Preto", "tamanho": "44, 46, 48, 50", "imagem": "fotos/vestido_151067dcf2.jpg" },
-                    { "cor": "Preto", "tamanho": "44, 46, 48, 50", "imagem": "fotos/vestido_151067dcf3.jpg" },
-                ]
-            },
-            {
-                "id": 14,
-                "nome": "Blusa detalhe",
-                "por": "169,90",
-                "vendido": true,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Marrom", "tamanho": "48", "imagem": "fotos/blusa_13064.jpg" },
-                ]
-            },
-            {
-                "id": 15,
-                "nome": "Bermuda",
-                "por": "199,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "48, 50", "imagem": "fotos/bermuda_241wany.jpg" },
-                ]
-            },
-            {
-                "id": 16,
-                "nome": "Vestido longo",
-                "por": "529,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Azul marinho", "tamanho": "50", "imagem": "fotos/vestido_1.jpg" },
-                ]
-            },
-            {
-                "id": 17,
-                "nome": "Vestido longo",
-                "por": "589,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Bordô", "tamanho": "48", "imagem": "fotos/vestido_2.jpg" },
-                ]
-            },
-            {
-                "id": 18,
-                "nome": "Vestido longo",
-                "por": "419,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Azul", "tamanho": "G2", "imagem": "fotos/vestido_3.jpg" },
-                ]
-            },
-            {
-                "id": 19,
-                "nome": "Vestido longo",
-                "por": "429,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Bege", "tamanho": "50", "imagem": "fotos/vestido_4.jpg" },
-                ]
-            },
-            {
-                "id": 20,
-                "nome": "Vestido longo",
-                "por": "539,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Azul", "tamanho": "52", "imagem": "fotos/vestido_5az.jpg" },
-                    { "cor": "Fúcsia", "tamanho": "50", "imagem": "fotos/vestido_5fuc.jpg" },
-                    { "cor": "Rosa", "tamanho": "48", "imagem": "fotos/vestido_5ros.jpg" },
-                ]
-            },
-            {
-                "id": 21,
-                "nome": "Vestido longo",
-                "por": "549,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Rosa", "tamanho": "50", "imagem": "fotos/vestido_6.jpg" },
-                ]
-            },
-            {
-                "id": 22,
-                "nome": "Vestido longo",
-                "por": "489,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Rosa", "tamanho": "52", "imagem": "fotos/vestido_7ros.jpg" },
-                    { "cor": "Verde", "tamanho": "50", "imagem": "fotos/vestido_7ver.jpg" },
-                ]
-            },
-            {
-                "id": 23,
-                "nome": "Vestido longo",
-                "por": "489,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Terracota", "tamanho": "52", "imagem": "fotos/vestido_8.jpg" },
-                ]
-            },
-            {
-                "id": 24,
-                "nome": "Vestido longo",
-                "por": "379,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Bege", "tamanho": "46", "imagem": "fotos/vestido_9.jpg" },
-                ]
-            },
-            {
-                "id": 25,
-                "nome": "Vestido longo",
-                "por": "419,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Bordô", "tamanho": "G2", "imagem": "fotos/vestido_10.jpg" },
-                ]
-            },
-            {
-                "id": 26,
-                "nome": "Vestido longo",
-                "por": "499,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Verde", "tamanho": "46", "imagem": "fotos/vestido_11.jpg" },
-                ]
-            },
-            {
-                "id": 27,
-                "nome": "Vestido longo",
-                "por": "499,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Azul marinho", "tamanho": "50", "imagem": "fotos/vestido_12az.jpg" },
-                    { "cor": "Bordô", "tamanho": "48", "imagem": "fotos/vestido_12bor.jpg" },
-                ]
-            },
-            {
-                "id": 28,
-                "nome": "Vestido longo",
-                "por": "489,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Rosa", "tamanho": "46", "imagem": "fotos/vestido_13.jpg" },
-                ]
-            },
-            {
-                "id": 29,
-                "nome": "Vestido curto",
-                "por": "379,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Terracota", "tamanho": "44", "imagem": "fotos/vestido_14ter.jpg" },
-                    { "cor": "Bordô", "tamanho": "46, 50", "imagem": "fotos/vestido_14bor.jpg" },
-                ]
-            },
-            {
-                "id": 30,
-                "nome": "Vestido curto",
-                "por": "389,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "46, 50", "imagem": "fotos/vestido_15pre.jpg" },
-                    { "cor": "Branco", "tamanho": "48, 50", "imagem": "fotos/vestido_15br.jpg" },
-                    { "cor": "Bordô", "tamanho": "44, 48, 50", "imagem": "fotos/vestido_15bor.jpg" },
-                ]
-            },
-            {
-                "id": 31,
-                "nome": "Vestido longo",
-                "por": "389,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Branco", "tamanho": "52", "imagem": "fotos/vestido_16.jpg" },
-                ]
-            },
-            {
-                "id": 32,
-                "nome": "Vestido longo",
-                "por": "419,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Verde", "tamanho": "G2", "imagem": "fotos/vestido_17.jpg" },
-                ]
-            },
-            {
-                "id": 33,
-                "nome": "Vestido longo",
-                "por": "499,90",
-                "vendido": true,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Terracota", "tamanho": "46", "imagem": "fotos/vestido_19.jpg" },
-                ]
-            },
-            {
-                "id": 34,
-                "nome": "Vestido longo",
-                "por": "559,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Bordô", "tamanho": "48", "imagem": "fotos/vestido_20.jpg" },
-                ]
-            },
-            {
-                "id": 35,
-                "nome": "Vestido midi",
-                "por": "329,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Marrom", "tamanho": "48", "imagem": "fotos/vestido_21mar.jpg" },
-                    { "cor": "Terracota", "tamanho": "46", "imagem": "fotos/vestido_21ter.jpg" },
-                ]
-            },
-            {
-                "id": 36,
-                "nome": "Vestido midi",
-                "por": "369,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Marrom", "tamanho": "46, 50", "imagem": "fotos/vestido_22mar.jpg" },
-                    { "cor": "Bordô", "tamanho": "44, 48", "imagem": "fotos/vestido_22bor.jpg" },
-                    { "cor": "Preto", "tamanho": "48", "imagem": "fotos/vestido_22pre.jpg" },
-                ]
-            },
-            {
-                "id": 37,
-                "nome": "Vestido midi",
-                "por": "389,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Bege", "tamanho": "46, 48", "imagem": "fotos/vestido_23.jpg" },
-                    { "cor": "Bege", "tamanho": "46, 48", "imagem": "fotos/vestido_23dt.jpg" },
-                ]
-            },
-            {
-                "id": 38,
-                "nome": "Vestido midi",
-                "por": "339,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Azul", "tamanho": "46", "imagem": "fotos/vestido_24az.jpg" },
-                    { "cor": "Bordô", "tamanho": "44, 48", "imagem": "fotos/vestido_24bor.jpg" },
-                    { "cor": "Preto", "tamanho": "52", "imagem": "fotos/vestido_24pre.jpg" },
-                ]
-            },
-            {
-                "id": 39,
-                "nome": "Vestido midi",
-                "por": "339,90",
-                "vendido": true,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "48", "imagem": "fotos/vestido_25.jpg" },
-                    { "cor": "Preto", "tamanho": "48", "imagem": "fotos/vestido_25dt.jpg" },
-                ]
-            },
-            {
-                "id": 40,
-                "nome": "Vestido midi",
-                "por": "339,90",
-                "vendido": true,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "48", "imagem": "fotos/vestido_26.jpg" },
-                ]
-            },
-            {
-                "id": 41,
-                "nome": "Vestido midi",
-                "por": "229,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Bordô", "tamanho": "44", "imagem": "fotos/vestido_27.jpg" },
-                ]
-            },
-            {
-                "id": 42,
-                "nome": "Vestido curto",
-                "por": "579,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Branco", "tamanho": "46, 50, 54", "imagem": "fotos/vestido_28.jpg" },
-                    { "cor": "Branco", "tamanho": "46, 50, 54", "imagem": "fotos/vestido_28dt.jpg" },
-                ]
-            },
-            {
-                "id": 43,
-                "nome": "Vestido longo",
-                "por": "389,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Branco", "tamanho": "50", "imagem": "fotos/vestido_29bra.jpg" },
-                    { "cor": "Amarelo", "tamanho": "52", "imagem": "fotos/vestido_29ama.jpg" },
-                    { "cor": "Vermelho", "tamanho": "54", "imagem": "fotos/vestido_29verm.jpg" },
-                ]
-            },
-            {
-                "id": 44,
-                "nome": "Conjunto",
-                "por": "549,80",
-                "precos_separados": [
-                    { "peca": "Blusa", "valor": "219,90" },
-                    { "peca": "Saia", "valor": "329,90" }
-                ],
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "GG, G1", "imagem": "fotos/conjunto_1.jpg" }
-                ]
-            },
-            {
-                "id": 45,
-                "nome": "Vestido midi",
-                "por": "399,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Vermelho", "tamanho": "46/48/50", "imagem": "fotos/vestido_30.jpg" },
-                ]
-            },
-            {
-                "id": 46,
-                "nome": "Vestido midi",
-                "por": "249,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Branco", "tamanho": "46/48/50", "imagem": "fotos/vestido_31.jpg" },
-                ]
-                /* id 32 código bling: 11831 pred */
-            },
-            {
-                "id": 47,
-                "nome": "Vestido longo",
-                "por": "379,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Azul", "tamanho": "46", "imagem": "fotos/vestido_33.jpg" },
-                ]
-            },
-            {
-                "id": 48,
-                "nome": "Vestido longo",
-                "por": "529,90",
-                "vendido": false,
-                "destaque": false,
-                "variantes": [
-                    { "cor": "Verde", "tamanho": "46", "imagem": "fotos/vestido_34.jpg" },
-                ]
-            },
-            {
-                "id": 49,
-                "nome": "Vestido longo",
-                "por": "539,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Verde Oliva", "tamanho": "46", "imagem": "fotos/vestido_35ver.jpg" },
-                    { "cor": "Terracota", "tamanho": "GG", "imagem": "fotos/vestido_35ter.jpg" },
-                    { "cor": "Bordô", "tamanho": "GG", "imagem": "fotos/vestido_35bor.jpg" },
-                ]
-                /* id 36 código bling: 50560 yni */
-            },
-            {
-                "id": 50,
-                "nome": "Vestido longo",
-                "por": "569,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Terracota", "tamanho": "50, 52", "imagem": "fotos/vestido_36ter.jpg" },
-                    { "cor": "Bordô", "tamanho": "46, 50, 52", "imagem": "fotos/vestido_36bor.jpg" },
-                ]
-                /* id 37 código bling: 23130 yni */
-            },
-            {
-                "id": 51,
-                "nome": "Vestido longo",
-                "por": "369,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Bordô", "tamanho": "50", "imagem": "fotos/vestido_37.jpg", "vendido": true },
-                    { "cor": "Verde", "tamanho": "GG", "imagem": "fotos/vestido_37ver.jpg" },
-                ]
-                /* id 38 código bling: 41460 yni */
-            },
-            {
-                "id": 52,
-                "nome": "Vestido longo",
-                "por": "569,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Azul Petróleo", "tamanho": "48, 50", "imagem": "fotos/vestido_38.jpg" },
-                ]
-                /* id 39 código bling: 50000 yni */
-            },
-            {
-                "id": 53,
-                "nome": "Vestido longo",
-                "por": "499,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Azul Petróleo", "tamanho": "46, 48, 50, 52", "imagem": "fotos/vestido_39.jpg" },
-                ]
-                /* id 40 código bling: 23140 yni*/
-            },
-            {
-                "id": 54,
-                "nome": "Vestido midi",
-                "por": "299,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Azul", "tamanho": "48", "imagem": "fotos/vestido_40az.jpg" },
-                    { "cor": "Preto", "tamanho": "50", "imagem": "fotos/vestido_40pre.jpg" },
-                ]
-                /* id 40 código bling: 150901 dc */
-            },
-            {
-                "id": 55,
-                "nome": "Vestido midi",
-                "por": "319,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Bordô", "tamanho": "48, 52", "imagem": "fotos/vestido_41.jpg" },
-                ]
-                /* id 40 código bling: 151034 dc */
-            },
-            {
-                "id": 56,
-                "nome": "Vestido midi",
-                "por": "239,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Azul Petróleo", "tamanho": "46", "imagem": "fotos/vestido_42.jpg" },
-                ]
-                /* id 40 código bling: 151266 dc */
-            },
-            {
-                "id": 57,
-                "nome": "Vestido midi",
-                "por": "399,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "48", "imagem": "fotos/vestido_43.jpg" },
-                ]
-                /* id 40 código bling: 13008 pred */
-            },
-            {
-                "id": 58,
-                "nome": "Vestido curto",
-                "por": "249,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "46, 50", "imagem": "fotos/vestido_44.jpg" },
-                ]
-                /* id 40 código bling: 2646 elaves */
-            },
-            {
-                "id": 59,
-                "nome": "Vestido midi",
-                "por": "249,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Azul", "tamanho": "48", "imagem": "fotos/vestido_45az.jpg" },
-                    { "cor": "Rosa", "tamanho": "46", "imagem": "fotos/vestido_45ros.jpg" },
-                ]
-                /* id 40 código bling: 350120 alp */
-            },
-            {
-                "id": 60,
-                "nome": "Vestido midi",
-                "por": "329,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Terracota", "tamanho": "48", "imagem": "fotos/vestido_46.jpg" },
-                ]
-                /* id 40 código bling: 42375 maza */
-            },
-            {
-                "id": 61,
-                "nome": "Vestido midi",
-                "por": "329,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Marrom", "tamanho": "48, 50", "imagem": "fotos/vestido_47.jpg" },
-                ]
-                /* id 40 código bling: 42457 maza */
-            },
-            {
-                "id": 62,
-                "nome": "Vestido midi",
-                "por": "329,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Branco", "tamanho": "G", "imagem": "fotos/vestido_48.jpg" },
-                ]
-                /* id 40 código bling: 047066 vf */
-            },
-            {
-                "id": 63,
-                "nome": "Vestido midi",
-                "por": "289,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Azul", "tamanho": "M, GG", "imagem": "fotos/vestido_49.jpg" },
-                ]
-                /* id 40 código bling: 295 wany */
-            },
-            {
-                "id": 64,
-                "nome": "Vestido midi",
-                "por": "319,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "54", "imagem": "fotos/vestido_50pre.jpg" },
-                    { "cor": "Verde", "tamanho": "48, 52", "imagem": "fotos/vestido_50ver.jpg" },
-                ]
-                /* id 40 código bling: 42437 maza */
-            },
-            {
-                "id": 65,
-                "nome": "Vestido longo",
-                "por": "289,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Rosa", "tamanho": "44", "imagem": "fotos/vestido_51.jpg" },
-                ]
-                /* id 40 código bling: 3617 kay */
-            },
-            {
-                "id": 67,
-                "nome": "Vestido midi",
-                "por": "199,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Marrom", "tamanho": "Único slim", "imagem": "fotos/vestido_52mar.jpg" },
-                    { "cor": "Preto", "tamanho": "Único slim", "imagem": "fotos/vestido_52pre.jpg" },
-                    { "cor": "Bege", "tamanho": "Único slim", "imagem": "fotos/vestido_52beg.jpg" },
-                ]
-                /* id código bling: clara slim tina */
-            },
-            {
-                "id": 68,
-                "nome": "Vestido longo",
-                "por": "239,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Bordô", "tamanho": "Único slim", "imagem": "fotos/vestido_53.jpg" },
-                ]
-                /* id código bling: Vestido rafaela est longo tina */
-            },
-            {
-                "id": 69,
-                "nome": "Vestido midi",
-                "por": "229,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Amarelo", "tamanho": "46", "imagem": "fotos/vestido_54.jpg" },
-                ]
-                /* id código bling: 6120 tuba */
-            },
-            {
-                "id": 70,
-                "nome": "Vestido midi",
-                "por": "199,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Azul", "tamanho": "46, 50", "imagem": "fotos/vestido_55.jpg" },
-                ]
-                /* id código bling: liso 312 elaves */
-            },
-            {
-                "id": 71,
-                "nome": "Vestido midi",
-                "por": "199,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Amarelo", "tamanho": "44, 46, 48", "imagem": "fotos/vestido_56.jpg" },
-                ]
-                /* id código bling:  folha 900868 join */
-            },
-            {
-                "id": 72,
-                "nome": "Vestido midi",
-                "por": "299,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Amarelo", "tamanho": "46", "imagem": "fotos/vestido_57.jpg" },
-                ]
-                /* id código bling:  25270 elaves */
-            },
-            {
-                "id": 73,
-                "nome": "Vestido curto",
-                "por": "299,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Rosa", "tamanho": "48, 52", "imagem": "fotos/vestido_58.jpg" },
-                ]
-                /* id código bling:   900854 join */
-            },
-            {
-                "id": 74,
-                "nome": "Vestido midi",
-                "por": "329,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Verde", "tamanho": "50", "imagem": "fotos/vestido_59ver.jpg" },
-                    { "cor": "Azul", "tamanho": "52", "imagem": "fotos/vestido_59az.jpg" },
-                ]
-                /* id código bling: 12969 pred */
-            },
-            {
-                "id": 75,
-                "nome": "Blusa detalhe manga",
-                "por": "189,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": true,
-                "variantes": [
-                    { "cor": "Bege", "tamanho": "48, 50", "imagem": "fotos/blusa_1beg.jpg" },
-                    { "cor": "Bege", "tamanho": "48, 50", "imagem": "fotos/blusa_1beg2.jpg" },
-                    { "cor": "Preto", "tamanho": "46", "imagem": "fotos/blusa_1pre.jpg" },
-                ]
-                /* id código bling: 13084 pred */
-            },
-            {
-                "id": 76,
-                "nome": "Calça sarja",
-                "por": "249,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": true,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "44, 46, 48, 50", "imagem": "fotos/calca_1.jpg" },
-                ]
-                /* id código bling: 13090 pred */
-            },
-            {
-                "id": 77,
-                "nome": "Blusa detalhe laise",
-                "por": "197,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": true,
-                "variantes": [
-                    { "cor": "Branco", "tamanho": "44, 46, 48", "imagem": "fotos/blusa_2.jpg" },
-                    { "cor": "Branco", "tamanho": "44, 46, 48", "imagem": "fotos/blusa_2f2.jpg" },
-                ]
-                /* id código bling: 13095 pred */
-            },
-            {
-                "id": 78,
-                "nome": "Blusa decote v",
-                "por": "217,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": true,
-                "variantes": [
-                    { "cor": "Branco (Off White)", "tamanho": "46, 48, 50", "imagem": "fotos/blusa_3off.jpg" },
-                    { "cor": "Branco (Off White)", "tamanho": "46, 48, 50", "imagem": "fotos/blusa_3off2.jpg" },
-                    { "cor": "Azul marinho", "tamanho": "44, 46", "imagem": "fotos/blusa_3az.jpg" },
-                ]
-                /* id código bling: 13088 pred */
-            },
-            {
-                "id": 79,
-                "nome": "Calça pantalona",
-                "por": "287,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": true,
-                "variantes": [
-                    { "cor": "Branco (Off White)", "tamanho": "46, 48, 50", "imagem": "fotos/calca_2.jpg" },
-                    { "cor": "Branco (Off White)", "tamanho": "46, 48, 50", "imagem": "fotos/calca_2ft2.jpg" },
-
-                ]
-                /* id código bling: 13097 pred */
-            },
-            {
-                "id": 80,
-                "nome": "Blusa detalhe gola",
-                "por": "189,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": true,
-                "variantes": [
-                    { "cor": "Bege", "tamanho": "46, 50", "imagem": "fotos/blusa_4beg.jpg" },
-                    { "cor": "Azul marinho", "tamanho": "48, 52", "imagem": "fotos/blusa_4az.jpg" },
-
-                ]
-                /* id código bling: 13098 pred */
-            },
-            {
-                "id": 81,
-                "nome": "Conjunto zíper",
-                "por": "427,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": true,
-                "variantes": [
-                    { "cor": "Branco (Off White)", "tamanho": "46, 48, 50", "imagem": "fotos/conjunto_2.jpg" },
-                ]
-                /* id código bling: 13093 pred */
-            },
-            {
-                "id": 82,
-                "nome": "Blusa",
-                "por": "179,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Bordô", "tamanho": "50", "imagem": "fotos/blusa_5.jpg" },
-                ]
-                /* id código bling: 12987 pred */
-            },
-            {
-                "id": 83,
-                "nome": "Blusa estampada",
-                "por": "179,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Azul", "tamanho": "50", "imagem": "fotos/blusa_6.jpg" },
-                ]
-                /* id código bling: 700869 join */
-            },
-            {
-                "id": 84,
-                "nome": "Blusa Detalhes Decote",
-                "por": "139,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Terracota", "tamanho": "48", "imagem": "fotos/blusa_7ter.jpg" },
-                ]
-                /* id código bling: 12696 car */
-            },
-            {
-                "id": 85,
-                "nome": "Regata",
-                "por": "179,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Vermelho", "tamanho": "48, 50", "imagem": "fotos/regata_1.jpg" },
-                ]
-                /* id código bling: 819 up */
-            },
-            {
-                "id": 86,
-                "nome": "Blusa Gola Detalhada",
-                "por": "209,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Bordô", "tamanho": "46, 52", "imagem": "fotos/blusa_8.jpg" },
-                ]
-                /* id código bling: 13048 pred */
-            },
-            {
-                "id": 87,
-                "nome": "Blusa Estampada",
-                "por": "149,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Bordô", "tamanho": "50, 54", "imagem": "fotos/blusa_9.jpg" },
-                ]
-                /* id código bling: 2527 pop */
-            },
-            {
-                "id": 88,
-                "nome": "Blusa Estampada",
-                "por": "149,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Bege", "tamanho": "46, 48, 50", "imagem": "fotos/blusa_10.jpg" },
-                ]
-                /* id código bling: 25471 car */
-            },
-            {
-                "id": 89,
-                "nome": "Blusa Decote Geo",
-                "por": "179,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Azul petróleo", "tamanho": "54", "imagem": "fotos/blusa_11.jpg" },
-                ]
-                /* id código bling: 700872 join */
-            },
-            {
-                "id": 90,
-                "nome": "Blusa Detalhe Alça",
-                "por": "139,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Azul", "tamanho": "46", "imagem": "fotos/blusa_12.jpg" },
-                ]
-                /* id código bling: 12874 pred */
-            },
-            {
-                "id": 90,
-                "nome": "Blusa Detalhe Frontal",
-                "por": "249,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Bege", "tamanho": "46", "imagem": "fotos/blusa_13.jpg" },
-                ]
-                /* id código bling: 432724 rery */
-            },
-            {
-                "id": 91,
-                "nome": "Body",
-                "por": "119,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Branco", "tamanho": "Único", "imagem": "fotos/body_1.jpg" },
-                ]
-                /* id código bling: 61792 mvft */
-            },
-            {
-                "id": 92,
-                "nome": "Blusa Bababos",
-                "por": "179,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Preto", "tamanho": "50", "imagem": "fotos/blusa_15pre.jpg" },
-                ]
-                /* id código bling: 12674 pred */
-            },
-            {
-                "id": 93,
-                "nome": "Blusa",
-                "por": "179,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Azul", "tamanho": "46", "imagem": "fotos/blusa_14az.jpg" },
-                    { "cor": "Branco", "tamanho": "52", "imagem": "fotos/blusa_14bra.jpg" },
-                ]
-                /* id código bling: 2984 btori */
-            },
-            {
-                "id": 94,
-                "nome": "Blusa Flor",
-                "por": "199,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Branco", "tamanho": "46, 50", "imagem": "fotos/blusa_17.jpg" },
-                ]
-                /* id código bling: 13042 pred */
-            },
-            {
-                "id": 95,
-                "nome": "Blusa Detalhe Ombro",
-                "por": "179,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Amarelo", "tamanho": "46", "imagem": "fotos/blusa_15.jpg" },
-                ]
-                /* id código bling: 12893 pred */
-            },
-            {
-                "id": 96,
-                "nome": "Blusa Gota",
-                "por": "189,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Bordô", "tamanho": "44", "imagem": "fotos/blusa_16.jpg" },
-                ]
-                /* id código bling: 130150 pred */
-            },
-            {
-                "id": 98,
-                "nome": "Blusa Babado",
-                "por": "197,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Vermelho", "tamanho": "46, 54", "imagem": "fotos/blusa_18.jpg" },
-                ]
-                /* id código bling: 125690 pred */
-            },
-            {
-                "id": 99,
-                "nome": "Blusa Babado Transversal",
-                "por": "187,90",
-                "vendido": false,
-                "destaque": false,
-                "novidade": false,
-                "variantes": [
-                    { "cor": "Bege", "tamanho": "50", "imagem": "fotos/blusa_19.jpg" },
-                ]
-                /* id código bling: babado transversal pred */
-            },
+                    ]
+                    /* id código bling: 13098 pred */
+                },
+                {
+                    "id": 81,
+                    "nome": "Conjunto zíper",
+                    "por": "427,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": true,
+                    "variantes": [
+                        { "cor": "Branco (Off White)", "tamanho": "46, 48, 50", "imagem": "fotos/conjunto_2.jpg" },
+                    ]
+                    /* id código bling: 13093 pred */
+                },
+                {
+                    "id": 82,
+                    "nome": "Blusa",
+                    "por": "179,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Bordô", "tamanho": "50", "imagem": "fotos/blusa_5.jpg" },
+                    ]
+                    /* id código bling: 12987 pred */
+                },
+                {
+                    "id": 83,
+                    "nome": "Blusa estampada",
+                    "por": "179,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Azul", "tamanho": "50", "imagem": "fotos/blusa_6.jpg" },
+                    ]
+                    /* id código bling: 700869 join */
+                },
+                {
+                    "id": 84,
+                    "nome": "Blusa Detalhes Decote",
+                    "por": "139,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Terracota", "tamanho": "48", "imagem": "fotos/blusa_7ter.jpg" },
+                    ]
+                    /* id código bling: 12696 car */
+                },
+                {
+                    "id": 85,
+                    "nome": "Regata",
+                    "por": "179,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Vermelho", "tamanho": "48, 50", "imagem": "fotos/regata_1.jpg" },
+                    ]
+                    /* id código bling: 819 up */
+                },
+                {
+                    "id": 86,
+                    "nome": "Blusa Gola Detalhada",
+                    "por": "209,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Bordô", "tamanho": "46, 52", "imagem": "fotos/blusa_8.jpg" },
+                    ]
+                    /* id código bling: 13048 pred */
+                },
+                {
+                    "id": 87,
+                    "nome": "Blusa Estampada",
+                    "por": "149,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Bordô", "tamanho": "50, 54", "imagem": "fotos/blusa_9.jpg" },
+                    ]
+                    /* id código bling: 2527 pop */
+                },
+                {
+                    "id": 88,
+                    "nome": "Blusa Estampada",
+                    "por": "149,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Bege", "tamanho": "46, 48, 50", "imagem": "fotos/blusa_10.jpg" },
+                    ]
+                    /* id código bling: 25471 car */
+                },
+                {
+                    "id": 89,
+                    "nome": "Blusa Decote Geo",
+                    "por": "179,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Azul petróleo", "tamanho": "54", "imagem": "fotos/blusa_11.jpg" },
+                    ]
+                    /* id código bling: 700872 join */
+                },
+                {
+                    "id": 90,
+                    "nome": "Blusa Detalhe Alça",
+                    "por": "139,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Azul", "tamanho": "46", "imagem": "fotos/blusa_12.jpg" },
+                    ]
+                    /* id código bling: 12874 pred */
+                },
+                {
+                    "id": 90,
+                    "nome": "Blusa Detalhe Frontal",
+                    "por": "249,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Bege", "tamanho": "46", "imagem": "fotos/blusa_13.jpg" },
+                    ]
+                    /* id código bling: 432724 rery */
+                },
+                {
+                    "id": 91,
+                    "nome": "Body",
+                    "por": "119,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Branco", "tamanho": "Único", "imagem": "fotos/body_1.jpg" },
+                    ]
+                    /* id código bling: 61792 mvft */
+                },
+                {
+                    "id": 92,
+                    "nome": "Blusa Bababos",
+                    "por": "179,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Preto", "tamanho": "50", "imagem": "fotos/blusa_15pre.jpg" },
+                    ]
+                    /* id código bling: 12674 pred */
+                },
+                {
+                    "id": 93,
+                    "nome": "Blusa",
+                    "por": "179,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Azul", "tamanho": "46", "imagem": "fotos/blusa_14az.jpg" },
+                        { "cor": "Branco", "tamanho": "52", "imagem": "fotos/blusa_14bra.jpg" },
+                    ]
+                    /* id código bling: 2984 btori */
+                },
+                {
+                    "id": 94,
+                    "nome": "Blusa Flor",
+                    "por": "199,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Branco", "tamanho": "46, 50", "imagem": "fotos/blusa_17.jpg" },
+                    ]
+                    /* id código bling: 13042 pred */
+                },
+                {
+                    "id": 95,
+                    "nome": "Blusa Detalhe Ombro",
+                    "por": "179,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Amarelo", "tamanho": "46", "imagem": "fotos/blusa_15.jpg" },
+                    ]
+                    /* id código bling: 12893 pred */
+                },
+                {
+                    "id": 96,
+                    "nome": "Blusa Gota",
+                    "por": "189,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Bordô", "tamanho": "44", "imagem": "fotos/blusa_16.jpg" },
+                    ]
+                    /* id código bling: 130150 pred */
+                },
+                {
+                    "id": 98,
+                    "nome": "Blusa Babado",
+                    "por": "197,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Vermelho", "tamanho": "46, 54", "imagem": "fotos/blusa_18.jpg" },
+                    ]
+                    /* id código bling: 125690 pred */
+                },
+                {
+                    "id": 99,
+                    "nome": "Blusa Babado Transversal",
+                    "por": "187,90",
+                    "vendido": false,
+                    "destaque": false,
+                    "novidade": false,
+                    "variantes": [
+                        { "cor": "Bege", "tamanho": "50", "imagem": "fotos/blusa_19.jpg" },
+                    ]
+                    /* id código bling: babado transversal pred */
+                },
 
 
-        ];
-
-        function calcularDesconto(valorStr) {
-            let valorNum = parseFloat(valorStr.replace('.', '').replace(',', '.'));
-            let valorComDesconto = valorNum * 0.90;
-            // Pega a parte inteira do valor com desconto e força os centavos para ,90
-            let valorInteiro = Math.floor(valorComDesconto);
-            return valorInteiro + ',90';
-        }
-
-        function calcularParcelamento(valorStr) {
-            // Converte o valor em texto "199,90" para número decimal
-            let valorNum = parseFloat(valorStr.replace('.', '').replace(',', '.'));
-            let parcelaMinima = 89.90;
-
-            // Calcula o máximo de parcelas possíveis
-            let maxParcelas = Math.floor(valorNum / parcelaMinima);
-
-            // Garante que será no mínimo 1 parcela (se a peça for mais barata que 89,90)
-            if (maxParcelas < 1) maxParcelas = 1;
-
-            // Calcula o valor exato da parcela e formata para o padrão R$
-            let valorParcela = (valorNum / maxParcelas).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-            // O CSS agora faz a quebra de linha e gruda o texto
-            return `${maxParcelas}x de R$ ${valorParcela} <span class="price-small">sem juros</span>`;
-        }
-
-        const ITENS_POR_CARREGAMENTO = 24;
-        let indiceExibicaoAtual = 0;
-        let carregandoMais = false;
-
-        let categoriaAtual = 'Todos';
-        let tamanhoAtual = 'Todos';
-        let corAtual = 'Todas';
-        let termoPesquisa = '';
-        let statusFiltro = 'todos';
-        let produtosFiltradosGlobais = [];
-
-        window.estadoVariantes = {};
-        window.estadoFotosCard = {};
-        window.intervalosCarrossel = {};
-
-        function formatarTamanhosOrdenados(listaItens) {
-            let itensExpandidos = [];
-
-            const ordemLetras = {
-                'PP': 1, 'P': 2, 'M': 3, 'G': 4, 'GG': 5,
-                'XG': 6, 'EG': 7, 'EGG': 8, 'G1': 9, 'G2': 10,
-                'G3': 11, 'G4': 12, 'ÚNICO': 13
-            };
-
-            listaItens.forEach(item => {
-                let tamStr = String(item.tamanho || item).trim();
-                let partes = tamStr.split(/[\,\/\-\s]+/);
-
-                partes.forEach(p => {
-                    let limpo = p.trim().toUpperCase();
-                    if (limpo !== '') {
-                        let num = parseInt(limpo);
-                        if (!isNaN(num)) {
-                            if (!itensExpandidos.includes(num)) itensExpandidos.push(num);
-                        } else {
-                            if (!itensExpandidos.includes(limpo)) itensExpandidos.push(limpo);
-                        }
-                    }
-                });
-            });
-
-            itensExpandidos.sort((a, b) => {
-                let numA = parseInt(a);
-                let numB = parseInt(b);
-
-                if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-
-                let pesoA = ordemLetras[String(a).toUpperCase()] || 99;
-                let pesoB = ordemLetras[String(b).toUpperCase()] || 99;
-
-                if (pesoA !== pesoB) return pesoA - pesoB;
-
-                return String(a).localeCompare(String(b));
-            });
-
-            return itensExpandidos.join('/');
-        }
-        // --- FUNÇÃO INTELIGENTE PARA MOSTRAR TAMANHOS SEM DUPLICAR E RISCAR OS VENDIDOS ---
-        function gerarHtmlTamanhosCor(corObj) {
-            let tamanhosMap = {};
-
-            // 1. Extrai todos os tamanhos individuais e verifica o estoque de cada um
-            corObj.variantesOriginais.forEach(v => {
-                let partes = String(v.tamanho || '').split(/[\,\/\-\s]+/);
-                partes.forEach(p => {
-                    let limpo = p.trim().toUpperCase();
-                    if (limpo !== '') {
-                        if (tamanhosMap[limpo] === undefined) {
-                            tamanhosMap[limpo] = (v.vendido === true);
-                        } else if (v.vendido !== true) {
-                            tamanhosMap[limpo] = false; // Se achar um disponivel, destrava
-                        }
-                    }
-                });
-            });
-
-            // 2. Ordena corretamente
-            const ordemLetras = {
-                'PP': 1, 'P': 2, 'M': 3, 'G': 4, 'GG': 5,
-                'XG': 6, 'EG': 7, 'EGG': 8, 'G1': 9, 'G2': 10,
-                'G3': 11, 'G4': 12, 'ÚNICO': 13
-            };
-
-            let tamanhosArray = Object.keys(tamanhosMap);
-            tamanhosArray.sort((a, b) => {
-                let numA = parseInt(a);
-                let numB = parseInt(b);
-                if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-                let pesoA = ordemLetras[a] || 99;
-                let pesoB = ordemLetras[b] || 99;
-                if (pesoA !== pesoB) return pesoA - pesoB;
-                return a.localeCompare(b);
-            });
-
-            // 3. Monta o visual
-            let htmlParts = tamanhosArray.map(tam => {
-                return tamanhosMap[tam]
-                    ? `<span style="text-decoration: line-through; color: #d93025; font-size: 14px;" title="Tamanho Esgotado">${tam}</span>`
-                    : `<span>${tam}</span>`;
-            });
-
-            return htmlParts.join(' <span style="font-size:12px; color:#999;">/</span> ');
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            produtos.forEach(p => {
-                const coresUnicasMap = {};
-                p.variantes.forEach(v => {
-                    let corNomeClean = v.cor.split('(')[0].trim().toLowerCase();
-                    if (!coresUnicasMap[corNomeClean]) {
-                        coresUnicasMap[corNomeClean] = {
-                            corOriginal: v.cor.split('(')[0].trim(),
-                            tamanhos: [],
-                            fotos: [],
-                            variantesOriginais: [],
-                            esgotada: true
-                        };
-                    }
-                    if (!coresUnicasMap[corNomeClean].tamanhos.includes(v.tamanho)) {
-                        coresUnicasMap[corNomeClean].tamanhos.push(v.tamanho);
-                    }
-                    coresUnicasMap[corNomeClean].fotos.push(v.imagem);
-                    coresUnicasMap[corNomeClean].variantesOriginais.push(v);
-
-                    if (v.vendido !== true) {
-                        coresUnicasMap[corNomeClean].esgotada = false;
-                    }
-                });
-
-                p.coresAgrupadas = Object.values(coresUnicasMap);
-            });
-
-            gerarAbasCategorias();
-            gerarAbasTamanhos();
-            gerarAbasCores();
-            atualizarFiltrosERenderizar();
-            configurarObservadorRolagem();
-        });
-
-        function obterCategoriasUnicas() {
-            const listasCategorias = ['Todos'];
-            produtos.forEach(p => {
-                let cat = p.nome.split(' ')[0].trim();
-                cat = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
-                if (!listasCategorias.includes(cat) && cat.length > 0) {
-                    listasCategorias.push(cat);
+            ];
+            // --- LISTA DE PRODUTOS DA LIQUIDAÇÃO ---
+            const produtosLiquidacao = [
+                {
+                    "id": "liq_1",
+                    "nome": "Blazer",
+                    "de": "330,00",
+                    "por": "99",
+                    "desconto": 70,
+                    "tamanho": "46",
+                    "vendido": false,
+                    "imagem": "fotos/blazer_2.jpg"
+                },
+                {
+                    "id": "liq_2",
+                    "nome": "Vestido",
+                    "de": "280",
+                    "por": "137",
+                    "desconto": 51,
+                    "tamanho": "40/42/44/46/48",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_47.jpg"
+                },
+                {
+                    "id": "liq_3",
+                    "nome": "Cropped",
+                    "de": "190,00",
+                    "por": "76",
+                    "desconto": 60,
+                    "tamanho": "G1",
+                    "vendido": false,
+                    "imagem": "fotosliq/cropped_4.jpg"
+                },
+                {
+                    "id": "liq_4",
+                    "nome": "Macaquinho",
+                    "de": "260,00",
+                    "por": "78",
+                    "desconto": 70,
+                    "tamanho": "46/48/50",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_3.jpg"
+                },
+                {
+                    "id": "liq_5",
+                    "nome": "Vestido",
+                    "de": "330,00",
+                    "por": "147",
+                    "desconto": 55,
+                    "tamanho": "46/48",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_46.jpg"
+                },
+                {
+                    "id": "liq_6",
+                    "nome": "Vestido",
+                    "de": "160,00",
+                    "por": "96",
+                    "desconto": 40,
+                    "tamanho": "46/48/50",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_29.jpg"
+                },
+                {
+                    "id": "liq_7",
+                    "nome": "Vestido",
+                    "de": "340,00",
+                    "por": "119",
+                    "desconto": 65,
+                    "tamanho": "48",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_45.jpg"
+                },
+                {
+                    "id": "liq_8",
+                    "nome": "Vestido",
+                    "de": "390,00",
+                    "por": "195",
+                    "desconto": 50,
+                    "tamanho": "50/52",
+                    "vendido": true,
+                    "imagem": "fotosliq/vestido_2.jpg"
+                },
+                {
+                    "id": "liq_9",
+                    "nome": "Biquíni",
+                    "de": "180,00",
+                    "por": "72",
+                    "desconto": 60,
+                    "tamanho": "48/50",
+                    "vendido": false,
+                    "imagem": "fotosliq/biquini_1.jpg"
+                },
+                {
+                    "id": "liq_10",
+                    "nome": "Conjunto",
+                    "de": "160,00",
+                    "por": "128",
+                    "desconto": 20,
+                    "tamanho": "48/50/52",
+                    "vendido": false,
+                    "imagem": "fotosliq/conjunto_8.jpg"
+                },
+                {
+                    "id": "liq_11",
+                    "nome": "Blusa",
+                    "de": "250,00",
+                    "por": "99",
+                    "desconto": 60,
+                    "tamanho": "46",
+                    "vendido": false,
+                    "imagem": "fotosliq/blusa_19.jpg"
+                },
+                {
+                    "id": "liq_12",
+                    "nome": "Conjunto",
+                    "de": "250,00",
+                    "por": "125",
+                    "desconto": 50,
+                    "tamanho": "G slim",
+                    "vendido": true,
+                    "imagem": "fotosliq/conjunto_6.jpg"
+                },
+                {
+                    "id": "liq_13",
+                    "nome": "Vestido",
+                    "de": "170,00",
+                    "por": "85",
+                    "desconto": 50,
+                    "tamanho": "38/40/42",
+                    "vendido": true,
+                    "imagem": "fotosliq/vestido_42.jpg"
+                },
+                {
+                    "id": "liq_14",
+                    "nome": "Vestido",
+                    "de": "260,00",
+                    "por": "104",
+                    "desconto": 60,
+                    "tamanho": "M slim",
+                    "vendido": true,
+                    "imagem": "fotosliq/vestido_40.jpg"
+                },
+                {
+                    "id": "liq_15",
+                    "nome": "Blusa",
+                    "de": "119,90",
+                    "por": "60",
+                    "desconto": 50,
+                    "tamanho": "48",
+                    "vendido": true,
+                    "imagem": "fotosliq/blusa_17.jpg"
+                },
+                {
+                    "id": "liq_16",
+                    "nome": "Vestido",
+                    "de": "250,00",
+                    "por": "87",
+                    "desconto": 65,
+                    "tamanho": "48/50",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_39.jpg"
+                },
+                {
+                    "id": "liq_17",
+                    "nome": "Macaquinho",
+                    "de": "230,00",
+                    "por": "149",
+                    "desconto": 35,
+                    "tamanho": "G1/G2/G3",
+                    "vendido": false,
+                    "imagem": "fotosliq/macacuinho_1.jpg"
+                },
+                {
+                    "id": "liq_18",
+                    "nome": "Blusa",
+                    "de": "250,00",
+                    "por": "99",
+                    "desconto": 60,
+                    "tamanho": "46/48",
+                    "vendido": false,
+                    "imagem": "fotosliq/blusa_14.jpg"
+                },
+                {
+                    "id": "liq_19",
+                    "nome": "Blusa",
+                    "de": "120,00",
+                    "por": "59",
+                    "desconto": 50,
+                    "tamanho": "G2/G3",
+                    "vendido": false,
+                    "imagem": "fotosliq/blusa_12.jpg"
+                },
+                {
+                    "id": "liq_20",
+                    "nome": "Vestido",
+                    "de": "350,00",
+                    "por": "136",
+                    "desconto": 60,
+                    "tamanho": "EG/G1",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_36.jpg"
+                },
+                {
+                    "id": "liq_21",
+                    "nome": "Vestido",
+                    "de": "350,00",
+                    "por": "157",
+                    "desconto": 55,
+                    "tamanho": "50",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_37.jpg"
+                },
+                {
+                    "id": "liq_22",
+                    "nome": "Calça",
+                    "de": "330,00",
+                    "por": "148",
+                    "desconto": 55,
+                    "tamanho": "52",
+                    "vendido": false,
+                    "imagem": "fotosliq/calca_3.jpg"
+                },
+                {
+                    "id": "liq_23",
+                    "nome": "Vestido",
+                    "de": "320,00",
+                    "por": "224",
+                    "desconto": 30,
+                    "tamanho": "48",
+                    "vendido": true,
+                    "imagem": "fotosliq/vestido_34.jpg"
+                },
+                {
+                    "id": "liq_24",
+                    "nome": "Vestido",
+                    "de": "400,00",
+                    "por": "97",
+                    "desconto": 75,
+                    "tamanho": "44/46",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_30.jpg"
+                },
+                {
+                    "id": "liq_25",
+                    "nome": "Vestido",
+                    "de": "250,00",
+                    "por": "99",
+                    "desconto": 60,
+                    "tamanho": "48",
+                    "vendido": true,
+                    "imagem": "fotosliq/vestido_32.jpg"
+                },
+                {
+                    "id": "liq_26",
+                    "nome": "Conjunto",
+                    "de": "400,00",
+                    "por": "197",
+                    "desconto": 51,
+                    "tamanho": "48/50",
+                    "vendido": false,
+                    "imagem": "fotosliq/conjunto_4.jpg"
+                },
+                {
+                    "id": "liq_27",
+                    "nome": "Vestido",
+                    "de": "420,00",
+                    "por": "294",
+                    "desconto": 30,
+                    "tamanho": "50/52",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_26.jpg"
+                },
+                {
+                    "id": "liq_28",
+                    "nome": "Vestido",
+                    "de": "420,00",
+                    "por": "294",
+                    "desconto": 30,
+                    "tamanho": "50/52",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_27.jpg"
+                },
+                {
+                    "id": "liq_29",
+                    "nome": "Macacão",
+                    "de": "280,00",
+                    "por": "139",
+                    "desconto": 50,
+                    "tamanho": "GG",
+                    "vendido": false,
+                    "imagem": "fotosliq/macacao_2.jpg"
+                },
+                {
+                    "id": "liq_30",
+                    "nome": "Cropped",
+                    "de": "140,00",
+                    "por": "63",
+                    "desconto": 55,
+                    "tamanho": "46 ao 54",
+                    "vendido": false,
+                    "imagem": "fotosliq/cropped_3.jpg"
+                },
+                {
+                    "id": "liq_31",
+                    "nome": "Calça",
+                    "de": "160,00",
+                    "por": "79",
+                    "desconto": 51,
+                    "tamanho": "50",
+                    "vendido": false,
+                    "imagem": "fotosliq/calca_2.jpg"
+                },
+                {
+                    "id": "liq_32",
+                    "nome": "Vestido",
+                    "de": "380,00",
+                    "por": "187",
+                    "desconto": 51,
+                    "tamanho": "46",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_1.jpg"
+                },
+                {
+                    "id": "liq_33",
+                    "nome": "Blusa",
+                    "de": "170,00",
+                    "por": "76",
+                    "desconto": 55,
+                    "tamanho": "50/52",
+                    "vendido": false,
+                    "imagem": "fotosliq/blusa_2.jpg"
+                },
+                {
+                    "id": "liq_34",
+                    "nome": "Blusa",
+                    "de": "190,00",
+                    "por": "95",
+                    "desconto": 50,
+                    "tamanho": "46/50",
+                    "vendido": true,
+                    "imagem": "fotosliq/blusa_3.jpg"
+                },
+                {
+                    "id": "liq_35",
+                    "nome": "Vestido",
+                    "de": "190,00",
+                    "por": "85",
+                    "desconto": 55,
+                    "tamanho": "48/50",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_4.jpg"
+                },
+                {
+                    "id": "liq_36",
+                    "nome": "Vestido",
+                    "de": "250,00",
+                    "por": "125",
+                    "desconto": 50,
+                    "tamanho": "46/48",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_5.jpg"
+                },
+                {
+                    "id": "liq_37",
+                    "nome": "Blusa",
+                    "de": "190,00",
+                    "por": "95",
+                    "desconto": 50,
+                    "tamanho": "46",
+                    "vendido": true,
+                    "imagem": "fotosliq/blusa_4.jpg"
+                },
+                {
+                    "id": "liq_38",
+                    "nome": "Vestido",
+                    "de": "370,00",
+                    "por": "144",
+                    "desconto": 60,
+                    "tamanho": "50/52",
+                    "vendido": true,
+                    "imagem": "fotosliq/vestido_6.jpg"
+                },
+                {
+                    "id": "liq_39",
+                    "nome": "Conjunto",
+                    "de": "250,00",
+                    "por": "125",
+                    "desconto": 50,
+                    "tamanho": "46/48",
+                    "vendido": true,
+                    "imagem": "fotosliq/conjunto_1.jpg"
+                },
+                {
+                    "id": "liq_40",
+                    "nome": "Blusa",
+                    "de": "190,00",
+                    "por": "95",
+                    "desconto": 50,
+                    "tamanho": "46",
+                    "vendido": true,
+                    "imagem": "fotosliq/blusa_5.jpg"
+                },
+                {
+                    "id": "liq_41",
+                    "nome": "Vestido",
+                    "de": "370,00",
+                    "por": "148",
+                    "desconto": 60,
+                    "tamanho": "48/50/52",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_7.jpg"
+                },
+                {
+                    "id": "liq_42",
+                    "nome": "Vestido",
+                    "de": "330,00",
+                    "por": "165",
+                    "desconto": 50,
+                    "tamanho": "48/50",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_8.jpg"
+                },
+                {
+                    "id": "liq_43",
+                    "nome": "Macacão",
+                    "de": "480,00",
+                    "por": "192",
+                    "desconto": 60,
+                    "tamanho": "52/54",
+                    "vendido": false,
+                    "imagem": "fotosliq/macacao_1.jpg"
+                },
+                {
+                    "id": "liq_44",
+                    "nome": "Vestido",
+                    "de": "390,00",
+                    "por": "175",
+                    "desconto": 55,
+                    "tamanho": "46/48/50",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_9.jpg"
+                },
+                {
+                    "id": "liq_45",
+                    "nome": "Vestido",
+                    "de": "350,00",
+                    "por": "175",
+                    "desconto": 50,
+                    "tamanho": "50",
+                    "vendido": true,
+                    "imagem": "fotosliq/vestido_12.jpg"
+                },
+                {
+                    "id": "liq_46",
+                    "nome": "Vestido",
+                    "de": "380,00",
+                    "por": "187",
+                    "desconto": 51,
+                    "tamanho": "48",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_13.jpg"
+                },
+                {
+                    "id": "liq_47",
+                    "nome": "Vestido",
+                    "de": "350,00",
+                    "por": "175",
+                    "desconto": 50,
+                    "tamanho": "48/50",
+                    "vendido": true,
+                    "imagem": "fotosliq/vestido_14.jpg"
+                },
+                {
+                    "id": "liq_48",
+                    "nome": "Blusa",
+                    "de": "250,00",
+                    "por": "125",
+                    "desconto": 50,
+                    "tamanho": "48/50",
+                    "vendido": true,
+                    "imagem": "fotosliq/blusa_6.jpg"
+                },
+                {
+                    "id": "liq_49",
+                    "nome": "Vestido",
+                    "de": "360,00",
+                    "por": "144",
+                    "desconto": 60,
+                    "tamanho": "44",
+                    "vendido": true,
+                    "imagem": "fotosliq/vestido_15.jpg"
+                },
+                {
+                    "id": "liq_50",
+                    "nome": "Blusa",
+                    "de": "320,00",
+                    "por": "128",
+                    "desconto": 60,
+                    "tamanho": "46",
+                    "vendido": false,
+                    "imagem": "fotosliq/blusa_7.jpg"
+                },
+                {
+                    "id": "liq_51",
+                    "nome": "Vestido",
+                    "de": "300,00",
+                    "por": "147",
+                    "desconto": 51,
+                    "tamanho": "48/50/52",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_16.jpg"
+                },
+                {
+                    "id": "liq_52",
+                    "nome": "Blusa",
+                    "de": "119,00",
+                    "por": "60",
+                    "desconto": 50,
+                    "tamanho": "48",
+                    "vendido": true,
+                    "imagem": "fotosliq/blusa_8.jpg"
+                },
+                {
+                    "id": "liq_53",
+                    "nome": "Colete",
+                    "de": "200,00",
+                    "por": "99",
+                    "desconto": 50,
+                    "tamanho": "50/52",
+                    "vendido": true,
+                    "imagem": "fotosliq/colete_1.jpg"
+                },
+                {
+                    "id": "liq_54",
+                    "nome": "Vestido",
+                    "de": "470,00",
+                    "por": "188",
+                    "desconto": 60,
+                    "tamanho": "46",
+                    "vendido": true,
+                    "imagem": "fotosliq/vestido_20.jpg"
+                },
+                {
+                    "id": "liq_55",
+                    "nome": "Vestido",
+                    "de": "180,00",
+                    "por": "90",
+                    "desconto": 50,
+                    "tamanho": "48/50",
+                    "vendido": true,
+                    "imagem": "fotosliq/vestido_21.jpg"
+                },
+                {
+                    "id": "liq_56",
+                    "nome": "Blusa",
+                    "de": "140,00",
+                    "por": "42",
+                    "desconto": 70,
+                    "tamanho": "48/50",
+                    "vendido": false,
+                    "imagem": "fotosliq/blusa_9.jpg"
+                },
+                {
+                    "id": "liq_57",
+                    "nome": "Conjunto",
+                    "de": "190,00",
+                    "por": "95",
+                    "desconto": 50,
+                    "tamanho": "46",
+                    "vendido": true,
+                    "imagem": "fotosliq/conjunto_3.jpg"
+                },
+                {
+                    "id": "liq_58",
+                    "nome": "Calça",
+                    "de": "200,00",
+                    "por": "97",
+                    "desconto": 52,
+                    "tamanho": "44/46",
+                    "vendido": false,
+                    "imagem": "fotosliq/calca_1.jpg"
+                },
+                {
+                    "id": "liq_59",
+                    "nome": "Body",
+                    "de": "99,90",
+                    "por": "50",
+                    "desconto": 50,
+                    "tamanho": "GG",
+                    "vendido": false,
+                    "imagem": "fotosliq/body_1.jpg"
+                },
+                {
+                    "id": "liq_60",
+                    "nome": "Short",
+                    "de": "199,00",
+                    "por": "58",
+                    "desconto": 70,
+                    "tamanho": "48/50",
+                    "vendido": false,
+                    "imagem": "fotosliq/short_1.jpg"
+                },
+                {
+                    "id": "liq_61",
+                    "nome": "Short",
+                    "de": "190,00",
+                    "por": "76",
+                    "desconto": 60,
+                    "tamanho": "46/48/50",
+                    "vendido": false,
+                    "imagem": "fotosliq/short_renda.jpg"
+                },
+                {
+                    "id": "liq_62",
+                    "nome": "Colete",
+                    "de": "180,00",
+                    "por": "87",
+                    "desconto": 52,
+                    "tamanho": "48/50",
+                    "vendido": true,
+                    "imagem": "fotosliq/colete_2.jpg"
+                },
+                {
+                    "id": "liq_63",
+                    "nome": "Cropped",
+                    "de": "180,00",
+                    "por": "54",
+                    "desconto": 70,
+                    "tamanho": "50/52",
+                    "vendido": false,
+                    "imagem": "fotosliq/cropped_1.jpg"
+                },
+                {
+                    "id": "liq_64",
+                    "nome": "Cropped",
+                    "de": "180,00",
+                    "por": "54",
+                    "desconto": 70,
+                    "tamanho": "46/48",
+                    "vendido": false,
+                    "imagem": "fotosliq/cropped_2.jpg"
+                },
+                {
+                    "id": "liq_65",
+                    "nome": "Vestido",
+                    "de": "390,00",
+                    "por": "117",
+                    "desconto": 70,
+                    "tamanho": "G1 e G2",
+                    "vendido": false,
+                    "imagem": "fotosliq/vestido_22.jpg"
+                },
+                {
+                    "id": "liq_66",
+                    "nome": "Short Saia",
+                    "de": "170,00",
+                    "por": "59",
+                    "desconto": 65,
+                    "tamanho": "48/50",
+                    "vendido": false,
+                    "imagem": "fotosliq/short_saia_1.jpg"
+                },
+                {
+                    "id": "liq_67",
+                    "nome": "Short",
+                    "de": "260,00",
+                    "por": "97",
+                    "desconto": 63,
+                    "tamanho": "48",
+                    "vendido": false,
+                    "imagem": "fotosliq/short_3.jpg"
                 }
-            });
-            return listasCategorias;
-        }
 
-        function gerarAbasCategorias() {
-            const containerAbas = document.getElementById('categories-tabs');
-            const categorias = obterCategoriasUnicas();
-            containerAbas.innerHTML = '';
-            categorias.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = `category-tab ${cat === 'Todos' ? 'active' : ''}`;
-                btn.textContent = cat;
-                btn.setAttribute('data-category', cat);
-                btn.onclick = () => filtrarCategoria(cat);
-                containerAbas.appendChild(btn);
-            });
-        }
+            ];
 
-        function gerarAbasTamanhos() {
-            const containerTamanhos = document.getElementById('sizes-tabs');
-            const tamanhosPadrao = ['Todos', '44', '46', '48', '50', '52', '54', 'P', 'M', 'GG', 'G2', 'G3'];
+            let modoLiquidacao = false;
 
-            containerTamanhos.innerHTML = '';
-            tamanhosPadrao.forEach(tam => {
-                const btn = document.createElement('button');
-                btn.className = `size-tab ${tam === 'Todos' ? 'active' : ''}`;
-                btn.textContent = tam;
-                btn.setAttribute('data-size', tam);
-                btn.onclick = () => filtrarTamanho(tam);
-                containerTamanhos.appendChild(btn);
-            });
-        }
-        function filtrarTamanho(tamanho) {
-            tamanhoAtual = tamanho;
-            // O '#sizes-tabs' garante que ele pinte apenas os botões de tamanho!
-            document.querySelectorAll('#sizes-tabs .size-tab').forEach(btn => {
-                if (btn.getAttribute('data-size') === tamanho) btn.classList.add('active');
-                else btn.classList.remove('active');
-            });
-            atualizarFiltrosERenderizar();
-        }
+            function abrirLiquidacao() {
+                modoLiquidacao = true;
 
-        function gerarAbasCores() {
-            const containerCores = document.getElementById('colors-tabs');
-            let coresData = [];
+                // 1. Atualiza os botões do topo
+                document.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('status-liquidacao').classList.add('active');
 
-            // Dicionário de Cores Sólidas
-            const mapaCoresHex = {
-                'Preto': '#000000',
-                'Branco': '#ffffff',
-                'Bordô': '#6d0c24',
-                'Azul marinho': '#1a2436',
-                'Verde oliva': '#556b2f',
-                'Azul': '#3a5f85',
-                'Marrom': '#6b4e31',
-                'Bege': '#e6d8c3',
-                'Fúcsia': '#d9027d',
-                'Rosa': '#f2a7b9',
-                'Verde': '#2d7a3e',
-                'Terracota': '#bd5a3a',
-                'Amarelo': '#eeb422',
-                'Vermelho': '#c21a1a',
-                'Azul petróleo': '#1e4d56'
-            };
+                // 2. Esconde as abas de categorias e tamanhos temporariamente
+                document.getElementById('categories-tabs').style.display = 'none';
+                document.getElementById('colors-tabs').parentElement.style.display = 'none';
+                document.getElementById('sizes-tabs').parentElement.style.display = 'none';
 
-            produtos.forEach(p => {
-                p.variantes.forEach(v => {
-                    let corLimpa = v.cor.split('(')[0].trim();
-                    corLimpa = corLimpa.charAt(0).toUpperCase() + corLimpa.slice(1).toLowerCase();
-
-                    if (!coresData.includes(corLimpa) && corLimpa !== '') {
-                        coresData.push(corLimpa);
-                    }
-                });
-            });
-
-            coresData.sort((a, b) => a.localeCompare(b));
-
-            containerCores.innerHTML = '';
-
-            // Botão "Todas"
-            const btnTodas = document.createElement('button');
-            btnTodas.className = `size-tab ${corAtual === 'Todas' ? 'active' : ''}`;
-            btnTodas.style.borderRadius = '50px';
-            btnTodas.textContent = 'Todas';
-            btnTodas.setAttribute('data-color', 'Todas');
-            btnTodas.onclick = () => filtrarCor('Todas');
-            containerCores.appendChild(btnTodas);
-
-            // Bolinhas sólidas
-            coresData.forEach(nomeCor => {
-                const btn = document.createElement('button');
-                btn.className = `color-filter-dot ${corAtual === nomeCor ? 'active' : ''}`;
-                btn.style.backgroundColor = mapaCoresHex[nomeCor] || '#cccccc';
-                btn.title = nomeCor; // Mostra o nome da cor ao passar o mouse
-                btn.setAttribute('data-color', nomeCor);
-                btn.onclick = () => filtrarCor(nomeCor);
-                containerCores.appendChild(btn);
-            });
-        }
-
-        function filtrarCor(cor) {
-            corAtual = cor;
-            // Gerencia a classe active tanto no botão "Todas" quanto nas bolinhas sólidas
-            document.querySelectorAll('#colors-tabs button').forEach(btn => {
-                if (btn.getAttribute('data-color') === cor) btn.classList.add('active');
-                else btn.classList.remove('active');
-            });
-            atualizarFiltrosERenderizar();
-        }
-
-        function verificaTamanhoCompativel(produto, tamanhoBuscado) {
-            if (tamanhoBuscado === 'Todos') return true;
-            const tamBuscaUpper = tamanhoBuscado.toUpperCase();
-
-            return produto.variantes.some(v => {
-                let tamFormatado = formatarTamanhosOrdenados([v]);
-                return tamFormatado.toUpperCase().includes(tamBuscaUpper) || v.tamanho.toUpperCase().includes(tamBuscaUpper);
-            });
-        }
-
-        function filtrarCategoria(categoria) {
-            categoriaAtual = categoria;
-            document.querySelectorAll('.category-tab').forEach(btn => {
-                if (btn.getAttribute('data-category') === categoria) btn.classList.add('active');
-                else btn.classList.remove('active');
-            });
-            atualizarFiltrosERenderizar();
-        }
-
-        function lidarBusca(valor) {
-            termoPesquisa = valor;
-            atualizarFiltrosERenderizar();
-        }
-
-        function filtrarStatus(status) {
-            statusFiltro = status;
-            document.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`status-${status}`).classList.add('active');
-            atualizarFiltrosERenderizar();
-        }
-
-        function atualizarFiltrosERenderizar() {
-            produtosFiltradosGlobais = produtos.filter(p => {
-                const catItem = p.nome.split(' ')[0].charAt(0).toUpperCase() + p.nome.split(' ')[0].slice(1).toLowerCase();
-
-                const matchesCategoria = (categoriaAtual === 'Todos' || catItem === categoriaAtual);
-                const matchesTamanho = verificaTamanhoCompativel(p, tamanhoAtual);
-                const matchesCor = (corAtual === 'Todas') || p.variantes.some(v => v.cor.toLowerCase().includes(corAtual.toLowerCase()));
-                const matchesStatus = (statusFiltro === 'todos') || (statusFiltro === 'disponiveis' && !p.vendido) || (statusFiltro === 'vendidos' && p.vendido);
-
-                const matchesPesquisa = p.nome.toLowerCase().includes(termoPesquisa.toLowerCase()) ||
-                    p.variantes.some(v => v.tamanho.toLowerCase().includes(termoPesquisa.toLowerCase()) || v.cor.toLowerCase().includes(termoPesquisa.toLowerCase()));
-
-                return matchesCategoria && matchesTamanho && matchesCor && matchesPesquisa && matchesStatus;
-            });
-
-            produtosFiltradosGlobais.sort(() => Math.random() - 0.5);
-
-            produtosFiltradosGlobais.sort((a, b) => {
-                // 1º Esgotados vão sempre para o final
-                if (a.vendido !== b.vendido) return a.vendido ? 1 : -1;
-
-                // 2º Novidades aparecem primeiro no catálogo
-                const novidadeA = a.novidade ? 1 : 0;
-                const novidadeB = b.novidade ? 1 : 0;
-                if (novidadeA !== novidadeB) return novidadeB - novidadeA;
-
-                // 3º Destaques aparecem logo em seguida
-                const destaqueA = a.destaque ? 1 : 0;
-                const destaqueB = b.destaque ? 1 : 0;
-                return destaqueB - destaqueA;
-            });
-
-            indiceExibicaoAtual = 0;
-            document.getElementById('product-grid').innerHTML = '';
-
-            const totalProdutos = produtosFiltradosGlobais.length;
-            document.getElementById('results-counter').textContent = `Mostrando ${totalProdutos} item(ns) encontrado(s)`;
-
-            if (totalProdutos === 0) {
-                document.getElementById('product-grid').innerHTML = `<div class="no-results">Nenhuma peça encontrada nos critérios selecionados.</div>`;
+                // 3. Limpa o catálogo normal e avisa quantos produtos tem na promo
+                const grid = document.getElementById('product-grid');
+                grid.innerHTML = '';
+                document.getElementById('results-counter').innerHTML = `<span style="color: #d93025; font-weight: 700;">💥 MEGA LIQUIDAÇÃO:</span> ${produtosLiquidacao.length} peças imperdíveis!`;
                 document.getElementById('scroll-status').style.display = 'none';
-                return;
+
+                // 4. Monta os cards exclusivos da liquidação com o botão em vermelho
+                produtosLiquidacao.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = `product-card ${p.vendido ? 'sold-item' : ''}`;
+
+                    const linkWhats = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent("Olá, UNNA! Quero garantir a oferta: " + p.nome + " (Tam: " + p.tamanho + ") por R$ " + p.por + " na liquidação!")}`;
+
+                    card.innerHTML = `
+                    <div class="product-image-container">
+                        ${!p.vendido ? `<span class="badge badge-discount">-${p.desconto}%</span>` : ''}
+                        <span class="badge badge-sold" style="display: ${p.vendido ? 'block' : 'none'};">ESGOTADO</span>
+                        
+                        <div class="carousel-track">
+                            <img src="${p.imagem}" class="active-img" alt="${p.nome}" onerror="substituirPorPlaceholder(this)">
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">${p.nome}</h3>
+                        
+                        <!-- Preços contendo o valor de risco (de) e o valor atual -->
+                        <div class="product-price-container">
+                            <div class="price-total" style="text-decoration: line-through; color: #999999; font-size: 13px;">R$ ${p.de}</div>
+                            <div class="price-installments" style="font-size: 22px; font-weight: 700; color: #000000;">R$ ${p.por}</div>
+                        </div>
+
+                        <!-- Estrutura de tamanho e espaçamento -->
+                        <div>
+                            <div class="product-size">
+                                <div style="margin-bottom: 8px; font-size: 11px;">Tamanho: <b style="color: var(--text-main); font-size: 11px; font-weight: 700;">${p.tamanho}</b></div>
+                            </div>
+                        </div>
+
+                        <!-- Botão de comprar em vermelho -->
+                        <div style="margin-top: auto;">
+                            ${p.vendido ?
+                            '<button class="btn-whatsapp btn-sold" disabled>Indisponível</button>' :
+                            `<a href="${linkWhats}" target="_blank" class="btn-whatsapp" style="background-color: #d93025; border-color: #d93025;">Comprar</a>`
+                        }
+                        </div>
+                    </div>
+                `;
+                    grid.appendChild(card);
+                });
+            }
+            // --- TRUQUE INTELIGENTE: GARANTE QUE O CATÁLOGO VOLTE AO NORMAL SE ELA SAIR DA LIQUIDAÇÃO ---
+            const originalFiltrarStatus = filtrarStatus;
+            filtrarStatus = function (status) {
+                if (modoLiquidacao) {
+                    modoLiquidacao = false;
+                    document.getElementById('categories-tabs').style.display = 'flex';
+                    document.getElementById('colors-tabs').parentElement.style.display = 'flex';
+                    document.getElementById('sizes-tabs').parentElement.style.display = 'flex';
+                    document.getElementById('status-liquidacao').classList.remove('active');
+                }
+                originalFiltrarStatus(status);
+            };
+
+            const originalLidarBusca = lidarBusca;
+            lidarBusca = function (valor) {
+                if (modoLiquidacao) {
+                    document.getElementById('status-todos').click();
+                }
+                originalLidarBusca(valor);
+            };
+
+            function calcularDesconto(valorStr) {
+                let valorNum = parseFloat(valorStr.replace('.', '').replace(',', '.'));
+                let valorComDesconto = valorNum * 0.90;
+                // Pega a parte inteira do valor com desconto e força os centavos para ,90
+                let valorInteiro = Math.floor(valorComDesconto);
+                return valorInteiro + ',90';
             }
 
-            carregarMaisProdutos();
-        }
+            function calcularParcelamento(valorStr) {
+                // Converte o valor em texto "199,90" para número decimal
+                let valorNum = parseFloat(valorStr.replace('.', '').replace(',', '.'));
+                let parcelaMinima = 89.90;
 
-        function trocarCor(event, produtoId, corIndex, dotElement) {
-            event.stopPropagation();
+                // Calcula o máximo de parcelas possíveis
+                let maxParcelas = Math.floor(valorNum / parcelaMinima);
 
-            if (window.intervalosCarrossel[produtoId]) {
-                clearInterval(window.intervalosCarrossel[produtoId]);
-                window.intervalosCarrossel[produtoId] = null;
+                // Garante que será no mínimo 1 parcela (se a peça for mais barata que 89,90)
+                if (maxParcelas < 1) maxParcelas = 1;
+
+                // Calcula o valor exato da parcela e formata para o padrão R$
+                let valorParcela = (valorNum / maxParcelas).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                // O CSS agora faz a quebra de linha e gruda o texto
+                return `${maxParcelas}x de R$ ${valorParcela} <span class="price-small">sem juros</span>`;
             }
 
-            const indContainer = document.getElementById(`indicators-${produtoId}`);
-            if (indContainer) indContainer.style.display = 'none';
+            const ITENS_POR_CARREGAMENTO = 24;
+            let indiceExibicaoAtual = 0;
+            let carregandoMais = false;
 
-            window.estadoVariantes[produtoId] = corIndex;
+            let categoriaAtual = 'Todos';
+            let tamanhoAtual = 'Todos';
+            let corAtual = 'Todas';
+            let termoPesquisa = '';
+            let statusFiltro = 'todos';
+            let produtosFiltradosGlobais = [];
 
-            const produto = produtos.find(p => p.id === produtoId);
-            const corObj = produto.coresAgrupadas[corIndex];
+            window.estadoVariantes = {};
+            window.estadoFotosCard = {};
+            window.intervalosCarrossel = {};
 
-            let todasAsFotos = [];
-            produto.variantes.forEach(v => {
-                if (v.imagem && !todasAsFotos.includes(v.imagem)) todasAsFotos.push(v.imagem);
+            function formatarTamanhosOrdenados(listaItens) {
+                let itensExpandidos = [];
+
+                const ordemLetras = {
+                    'PP': 1, 'P': 2, 'M': 3, 'G': 4, 'GG': 5,
+                    'XG': 6, 'EG': 7, 'EGG': 8, 'G1': 9, 'G2': 10,
+                    'G3': 11, 'G4': 12, 'ÚNICO': 13
+                };
+
+                listaItens.forEach(item => {
+                    let tamStr = String(item.tamanho || item).trim();
+                    let partes = tamStr.split(/[\,\/\-\s]+/);
+
+                    partes.forEach(p => {
+                        let limpo = p.trim().toUpperCase();
+                        if (limpo !== '') {
+                            let num = parseInt(limpo);
+                            if (!isNaN(num)) {
+                                if (!itensExpandidos.includes(num)) itensExpandidos.push(num);
+                            } else {
+                                if (!itensExpandidos.includes(limpo)) itensExpandidos.push(limpo);
+                            }
+                        }
+                    });
+                });
+
+                itensExpandidos.sort((a, b) => {
+                    let numA = parseInt(a);
+                    let numB = parseInt(b);
+
+                    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+
+                    let pesoA = ordemLetras[String(a).toUpperCase()] || 99;
+                    let pesoB = ordemLetras[String(b).toUpperCase()] || 99;
+
+                    if (pesoA !== pesoB) return pesoA - pesoB;
+
+                    return String(a).localeCompare(String(b));
+                });
+
+                return itensExpandidos.join('/');
+            }
+            // --- FUNÇÃO INTELIGENTE PARA MOSTRAR TAMANHOS SEM DUPLICAR E RISCAR OS VENDIDOS ---
+            function gerarHtmlTamanhosCor(corObj) {
+                let tamanhosMap = {};
+
+                // 1. Extrai todos os tamanhos individuais e verifica o estoque de cada um
+                corObj.variantesOriginais.forEach(v => {
+                    let partes = String(v.tamanho || '').split(/[\,\/\-\s]+/);
+                    partes.forEach(p => {
+                        let limpo = p.trim().toUpperCase();
+                        if (limpo !== '') {
+                            if (tamanhosMap[limpo] === undefined) {
+                                tamanhosMap[limpo] = (v.vendido === true);
+                            } else if (v.vendido !== true) {
+                                tamanhosMap[limpo] = false; // Se achar um disponivel, destrava
+                            }
+                        }
+                    });
+                });
+
+                // 2. Ordena corretamente
+                const ordemLetras = {
+                    'PP': 1, 'P': 2, 'M': 3, 'G': 4, 'GG': 5,
+                    'XG': 6, 'EG': 7, 'EGG': 8, 'G1': 9, 'G2': 10,
+                    'G3': 11, 'G4': 12, 'ÚNICO': 13
+                };
+
+                let tamanhosArray = Object.keys(tamanhosMap);
+                tamanhosArray.sort((a, b) => {
+                    let numA = parseInt(a);
+                    let numB = parseInt(b);
+                    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+                    let pesoA = ordemLetras[a] || 99;
+                    let pesoB = ordemLetras[b] || 99;
+                    if (pesoA !== pesoB) return pesoA - pesoB;
+                    return a.localeCompare(b);
+                });
+
+                // 3. Monta o visual
+                let htmlParts = tamanhosArray.map(tam => {
+                    return tamanhosMap[tam]
+                        ? `<span style="text-decoration: line-through; color: #d93025; font-size: 14px;" title="Tamanho Esgotado">${tam}</span>`
+                        : `<span>${tam}</span>`;
+                });
+
+                return htmlParts.join(' <span style="font-size:12px; color:#999;">/</span> ');
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                produtos.forEach(p => {
+                    const coresUnicasMap = {};
+                    p.variantes.forEach(v => {
+                        let corNomeClean = v.cor.split('(')[0].trim().toLowerCase();
+                        if (!coresUnicasMap[corNomeClean]) {
+                            coresUnicasMap[corNomeClean] = {
+                                corOriginal: v.cor.split('(')[0].trim(),
+                                tamanhos: [],
+                                fotos: [],
+                                variantesOriginais: [],
+                                esgotada: true
+                            };
+                        }
+                        if (!coresUnicasMap[corNomeClean].tamanhos.includes(v.tamanho)) {
+                            coresUnicasMap[corNomeClean].tamanhos.push(v.tamanho);
+                        }
+                        coresUnicasMap[corNomeClean].fotos.push(v.imagem);
+                        coresUnicasMap[corNomeClean].variantesOriginais.push(v);
+
+                        if (v.vendido !== true) {
+                            coresUnicasMap[corNomeClean].esgotada = false;
+                        }
+                    });
+
+                    p.coresAgrupadas = Object.values(coresUnicasMap);
+                });
+
+                gerarAbasCategorias();
+                gerarAbasTamanhos();
+                gerarAbasCores();
+                atualizarFiltrosERenderizar();
+                configurarObservadorRolagem();
             });
-            let fotoIndex = todasAsFotos.indexOf(corObj.fotos[0]);
-            if (fotoIndex === -1) fotoIndex = 0;
 
-            window.estadoFotosCard[produtoId] = fotoIndex;
+            function obterCategoriasUnicas() {
+                const listasCategorias = ['Todos'];
+                produtos.forEach(p => {
+                    let cat = p.nome.split(' ')[0].trim();
+                    cat = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
+                    if (!listasCategorias.includes(cat) && cat.length > 0) {
+                        listasCategorias.push(cat);
+                    }
+                });
+                return listasCategorias;
+            }
 
-            const trackElement = document.getElementById(`track-${produtoId}`);
-            if (trackElement) {
-                const imagens = trackElement.querySelectorAll('img');
-                imagens.forEach((img, i) => {
-                    if (i === fotoIndex) img.classList.add('active-img');
-                    else img.classList.remove('active-img');
+            function gerarAbasCategorias() {
+                const containerAbas = document.getElementById('categories-tabs');
+                const categorias = obterCategoriasUnicas();
+                containerAbas.innerHTML = '';
+                categorias.forEach(cat => {
+                    const btn = document.createElement('button');
+                    btn.className = `category-tab ${cat === 'Todos' ? 'active' : ''}`;
+                    btn.textContent = cat;
+                    btn.setAttribute('data-category', cat);
+                    btn.onclick = () => filtrarCategoria(cat);
+                    containerAbas.appendChild(btn);
                 });
             }
 
-            const badgeSold = document.getElementById(`badge-sold-${produtoId}`);
-            if (badgeSold) {
-                if (produto.vendido || corObj.esgotada) {
-                    badgeSold.style.display = 'block';
-                    badgeSold.textContent = produto.vendido ? 'ESGOTADO' : 'COR ESGOTADA';
-                } else {
-                    badgeSold.style.display = 'none';
-                }
+            function gerarAbasTamanhos() {
+                const containerTamanhos = document.getElementById('sizes-tabs');
+                const tamanhosPadrao = ['Todos', '44', '46', '48', '50', '52', '54', 'P', 'M', 'GG', 'G2', 'G3'];
+
+                containerTamanhos.innerHTML = '';
+                tamanhosPadrao.forEach(tam => {
+                    const btn = document.createElement('button');
+                    btn.className = `size-tab ${tam === 'Todos' ? 'active' : ''}`;
+                    btn.textContent = tam;
+                    btn.setAttribute('data-size', tam);
+                    btn.onclick = () => filtrarTamanho(tam);
+                    containerTamanhos.appendChild(btn);
+                });
+            }
+            function filtrarTamanho(tamanho) {
+                tamanhoAtual = tamanho;
+                // O '#sizes-tabs' garante que ele pinte apenas os botões de tamanho!
+                document.querySelectorAll('#sizes-tabs .size-tab').forEach(btn => {
+                    if (btn.getAttribute('data-size') === tamanho) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                });
+                atualizarFiltrosERenderizar();
             }
 
-            // Atualiza o texto dinâmico da cor selecionada
-            let esgotadaTexto = corObj.esgotada ? ' <span style="color: #d93025; font-size: 10px; font-weight: 700;">(ESGOTADA)</span>' : '';
-            const textoCorElement = document.getElementById(`cor-selecionada-${produtoId}`);
-            if (textoCorElement) {
-                textoCorElement.innerHTML = `Cor: <b>${corObj.corOriginal}</b>${esgotadaTexto}`;
-            }
+            function gerarAbasCores() {
+                const containerCores = document.getElementById('colors-tabs');
+                let coresData = [];
 
-            // GARANTE O CONTORNO PRETO NA BOLINHA CLICADA E REMOVE DAS OUTRAS
-            const container = dotElement.parentElement;
-            container.querySelectorAll('.cor-dot').forEach(d => d.classList.remove('active'));
-            dotElement.classList.add('active');
+                // Dicionário de Cores Sólidas
+                const mapaCoresHex = {
+                    'Preto': '#000000',
+                    'Branco': '#ffffff',
+                    'Bordô': '#6d0c24',
+                    'Azul marinho': '#1a2436',
+                    'Verde oliva': '#556b2f',
+                    'Azul': '#3a5f85',
+                    'Marrom': '#6b4e31',
+                    'Bege': '#e6d8c3',
+                    'Fúcsia': '#d9027d',
+                    'Rosa': '#f2a7b9',
+                    'Verde': '#2d7a3e',
+                    'Terracota': '#bd5a3a',
+                    'Amarelo': '#eeb422',
+                    'Vermelho': '#c21a1a',
+                    'Azul petróleo': '#1e4d56'
+                };
 
-            // BOTÃO COMPRAR VOLTA AO NORMAL
-            const btnContainer = document.getElementById(`btn-container-${produtoId}`);
-            if (btnContainer && !produto.vendido) {
-                const stringTamanhos = formatarTamanhosOrdenados(corObj.tamanhos);
-                const mensagemWhats = encodeURIComponent(`Olá, UNNA! Amei o "${produto.nome}" na cor ${corObj.corOriginal} (Tamanhos: ${stringTamanhos}) do catálogo. Gostaria de verificar a disponibilidade para compra!`);
-                btnContainer.innerHTML = `<a id="btn-compra-${produtoId}" href="https://wa.me/${WHATSAPP_NUMERO}?text=${mensagemWhats}" target="_blank" class="btn-whatsapp">Comprar</a>`;
-            }
-        }
-        function carregarMaisProdutos() {
-            if (carregandoMais || indiceExibicaoAtual >= produtosFiltradosGlobais.length) return;
+                produtos.forEach(p => {
+                    p.variantes.forEach(v => {
+                        let corLimpa = v.cor.split('(')[0].trim();
+                        corLimpa = corLimpa.charAt(0).toUpperCase() + corLimpa.slice(1).toLowerCase();
 
-            carregandoMais = true;
-            const statusDiv = document.getElementById('scroll-status');
-            const grid = document.getElementById('product-grid');
-
-            const proximoLote = produtosFiltradosGlobais.slice(indiceExibicaoAtual, indiceExibicaoAtual + ITENS_POR_CARREGAMENTO);
-
-            proximoLote.forEach(p => {
-                if (window.estadoVariantes[p.id] === undefined) window.estadoVariantes[p.id] = 0;
-                if (window.estadoFotosCard[p.id] === undefined) window.estadoFotosCard[p.id] = 0;
-
-                let corIndex = window.estadoVariantes[p.id];
-                let corObj = p.coresAgrupadas[corIndex];
-
-                const stringTamanhosAtual = formatarTamanhosOrdenados(corObj.tamanhos);
-                const todosTamanhos = formatarTamanhosOrdenados(p.variantes);
-                const todasCores = [...new Set(p.coresAgrupadas.map(c => c.corOriginal))].join(', ');
-
-                // Gera as bolinhas de cor sem nenhuma marcada por padrão ao carregar
-                let carrosselCoresHtml = '';
-                if (p.coresAgrupadas.length > 1) {
-                    carrosselCoresHtml = '<div class="cores-container">';
-                    p.coresAgrupadas.forEach((c, index) => {
-                        // Nenhuma bolinha ganha a classe 'active' ao abrir o card
-                        carrosselCoresHtml += `<div class="cor-dot" style="background-image: url('${c.fotos[0]}')" onclick="trocarCor(event, ${p.id}, ${index}, this)" title="Cor: ${c.corOriginal}"></div>`;
+                        if (!coresData.includes(corLimpa) && corLimpa !== '') {
+                            coresData.push(corLimpa);
+                        }
                     });
-                    carrosselCoresHtml += '</div>';
+                });
+
+                coresData.sort((a, b) => a.localeCompare(b));
+
+                containerCores.innerHTML = '';
+
+                // Botão "Todas"
+                const btnTodas = document.createElement('button');
+                btnTodas.className = `size-tab ${corAtual === 'Todas' ? 'active' : ''}`;
+                btnTodas.style.borderRadius = '50px';
+                btnTodas.textContent = 'Todas';
+                btnTodas.setAttribute('data-color', 'Todas');
+                btnTodas.onclick = () => filtrarCor('Todas');
+                containerCores.appendChild(btnTodas);
+
+                // Bolinhas sólidas
+                coresData.forEach(nomeCor => {
+                    const btn = document.createElement('button');
+                    btn.className = `color-filter-dot ${corAtual === nomeCor ? 'active' : ''}`;
+                    btn.style.backgroundColor = mapaCoresHex[nomeCor] || '#cccccc';
+                    btn.title = nomeCor; // Mostra o nome da cor ao passar o mouse
+                    btn.setAttribute('data-color', nomeCor);
+                    btn.onclick = () => filtrarCor(nomeCor);
+                    containerCores.appendChild(btn);
+                });
+            }
+
+            function filtrarCor(cor) {
+                corAtual = cor;
+                // Gerencia a classe active tanto no botão "Todas" quanto nas bolinhas sólidas
+                document.querySelectorAll('#colors-tabs button').forEach(btn => {
+                    if (btn.getAttribute('data-color') === cor) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                });
+                atualizarFiltrosERenderizar();
+            }
+
+            function verificaTamanhoCompativel(produto, tamanhoBuscado) {
+                if (tamanhoBuscado === 'Todos') return true;
+                const tamBuscaUpper = tamanhoBuscado.toUpperCase();
+
+                return produto.variantes.some(v => {
+                    let tamFormatado = formatarTamanhosOrdenados([v]);
+                    return tamFormatado.toUpperCase().includes(tamBuscaUpper) || v.tamanho.toUpperCase().includes(tamBuscaUpper);
+                });
+            }
+
+            function filtrarCategoria(categoria) {
+                categoriaAtual = categoria;
+                document.querySelectorAll('.category-tab').forEach(btn => {
+                    if (btn.getAttribute('data-category') === categoria) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                });
+                atualizarFiltrosERenderizar();
+            }
+
+            function lidarBusca(valor) {
+                termoPesquisa = valor;
+                atualizarFiltrosERenderizar();
+            }
+
+            function filtrarStatus(status) {
+                statusFiltro = status;
+                document.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById(`status-${status}`).classList.add('active');
+                atualizarFiltrosERenderizar();
+            }
+
+            function atualizarFiltrosERenderizar() {
+                // TRAVA DE SEGURANÇA: Se estiver no modo liquidação, não carrega os produtos normais!
+                if (modoLiquidacao) {
+                    return;
                 }
 
-                // --- GERA O TRILHO DESLIZANTE DE FOTOS E OS INDICADORES ---
-                let todasAsFotosCard = [];
-                p.variantes.forEach(v => {
-                    if (v.imagem && !todasAsFotosCard.includes(v.imagem)) todasAsFotosCard.push(v.imagem);
+                produtosFiltradosGlobais = produtos.filter(p => {
+                    const catItem = p.nome.split(' ')[0].charAt(0).toUpperCase() + p.nome.split(' ')[0].slice(1).toLowerCase();
+
+                    const matchesCategoria = (categoriaAtual === 'Todos' || catItem === categoriaAtual);
+                    const matchesTamanho = verificaTamanhoCompativel(p, tamanhoAtual);
+                    const matchesCor = (corAtual === 'Todas') || p.variantes.some(v => v.cor.toLowerCase().includes(corAtual.toLowerCase()));
+                    const matchesStatus = (statusFiltro === 'todos') || (statusFiltro === 'disponiveis' && !p.vendido) || (statusFiltro === 'vendidos' && p.vendido);
+
+                    const matchesPesquisa = p.nome.toLowerCase().includes(termoPesquisa.toLowerCase()) ||
+                        p.variantes.some(v => v.tamanho.toLowerCase().includes(termoPesquisa.toLowerCase()) || v.cor.toLowerCase().includes(termoPesquisa.toLowerCase()));
+
+                    return matchesCategoria && matchesTamanho && matchesCor && matchesPesquisa && matchesStatus;
                 });
 
-                let trackImagensHtml = '';
-                todasAsFotosCard.forEach((foto, i) => {
-                    // A foto atual recebe a classe para já nascer visível
-                    let classeVisivel = i === window.estadoFotosCard[p.id] ? 'active-img' : '';
-                    trackImagensHtml += `<img src="${foto}" class="${classeVisivel}" alt="${p.nome}" onclick="abrirModal(${p.id})" onerror="substituirPorPlaceholder(this)">`;
+                produtosFiltradosGlobais.sort(() => Math.random() - 0.5);
+
+                produtosFiltradosGlobais.sort((a, b) => {
+                    // 1º Esgotados vão sempre para o final
+                    if (a.vendido !== b.vendido) return a.vendido ? 1 : -1;
+
+                    // 2º Novidades aparecem primeiro no catálogo
+                    const novidadeA = a.novidade ? 1 : 0;
+                    const novidadeB = b.novidade ? 1 : 0;
+                    if (novidadeA !== novidadeB) return novidadeB - novidadeA;
+
+                    // 3º Destaques aparecem logo em seguida
+                    const destaqueA = a.destaque ? 1 : 0;
+                    const destaqueB = b.destaque ? 1 : 0;
+                    return destaqueB - destaqueA;
                 });
 
-                let indicadoresHtml = '';
-                if (todasAsFotosCard.length > 1) {
-                    indicadoresHtml = `<div class="carousel-indicators" id="indicators-${p.id}">`;
-                    todasAsFotosCard.forEach((_, i) => {
-                        indicadoresHtml += `<div class="indicator-bar ${i === window.estadoFotosCard[p.id] ? 'active' : ''}"></div>`;
+                indiceExibicaoAtual = 0;
+                document.getElementById('product-grid').innerHTML = '';
+
+                const totalProdutos = produtosFiltradosGlobais.length;
+                document.getElementById('results-counter').textContent = `Mostrando ${totalProdutos} item(ns) encontrado(s)`;
+
+                if (totalProdutos === 0) {
+                    document.getElementById('product-grid').innerHTML = `<div class="no-results">Nenhuma peça encontrada nos critérios selecionados.</div>`;
+                    document.getElementById('scroll-status').style.display = 'none';
+                    return;
+                }
+
+                carregarMaisProdutos();
+            }
+
+            function trocarCor(event, produtoId, corIndex, dotElement) {
+                event.stopPropagation();
+
+                if (window.intervalosCarrossel[produtoId]) {
+                    clearInterval(window.intervalosCarrossel[produtoId]);
+                    window.intervalosCarrossel[produtoId] = null;
+                }
+
+                const indContainer = document.getElementById(`indicators-${produtoId}`);
+                if (indContainer) indContainer.style.display = 'none';
+
+                window.estadoVariantes[produtoId] = corIndex;
+
+                const produto = produtos.find(p => p.id === produtoId);
+                const corObj = produto.coresAgrupadas[corIndex];
+
+                let todasAsFotos = [];
+                produto.variantes.forEach(v => {
+                    if (v.imagem && !todasAsFotos.includes(v.imagem)) todasAsFotos.push(v.imagem);
+                });
+                let fotoIndex = todasAsFotos.indexOf(corObj.fotos[0]);
+                if (fotoIndex === -1) fotoIndex = 0;
+
+                window.estadoFotosCard[produtoId] = fotoIndex;
+
+                const trackElement = document.getElementById(`track-${produtoId}`);
+                if (trackElement) {
+                    const imagens = trackElement.querySelectorAll('img');
+                    imagens.forEach((img, i) => {
+                        if (i === fotoIndex) img.classList.add('active-img');
+                        else img.classList.remove('active-img');
                     });
-                    indicadoresHtml += `</div>`;
                 }
 
-                const mensagemWhats = encodeURIComponent(`Olá, UNNA! Amei o "${p.nome}" na cor ${corObj.corOriginal} (Tamanhos disponíveis: ${stringTamanhosAtual}) do catálogo. Gostaria de verificar a disponibilidade para compra!`);
-                const linkWhats = `https://wa.me/${WHATSAPP_NUMERO}?text=${mensagemWhats}`;
+                const badgeSold = document.getElementById(`badge-sold-${produtoId}`);
+                if (badgeSold) {
+                    if (produto.vendido || corObj.esgotada) {
+                        badgeSold.style.display = 'block';
+                        badgeSold.textContent = produto.vendido ? 'ESGOTADO' : 'COR ESGOTADA';
+                    } else {
+                        badgeSold.style.display = 'none';
+                    }
+                }
 
-                const card = document.createElement('div');
-                card.className = `product-card ${p.vendido ? 'sold-item' : ''}`;
-
-                // Lógica inteligente de exibir e riscar os tamanhos sem duplicar
+                // Atualiza o texto dinâmico da cor selecionada
                 let esgotadaTexto = corObj.esgotada ? ' <span style="color: #d93025; font-size: 10px; font-weight: 700;">(ESGOTADA)</span>' : '';
+                const textoCorElement = document.getElementById(`cor-selecionada-${produtoId}`);
+                if (textoCorElement) {
+                    textoCorElement.innerHTML = `Cor: <b>${corObj.corOriginal}</b>${esgotadaTexto}`;
+                }
 
-                // NOVO: Lista de cores e tamanhos com visual limpo, elegante e leve
-                let listaCoresTamanhosHtml = p.coresAgrupadas.map(c => {
-                    let tamanhosCor = gerarHtmlTamanhosCor(c);
-                    let esgotadaStatus = c.esgotada ? ' <span style="color: #d93025; font-size: 9px; font-weight: 600;">(ESGOTADA)</span>' : '';
-                    return `<div style="margin-bottom: 5px; font-size: 11px; font-weight: 400; color: var(--text-muted); letter-spacing: 0.03em;">
+                // GARANTE O CONTORNO PRETO NA BOLINHA CLICADA E REMOVE DAS OUTRAS
+                const container = dotElement.parentElement;
+                container.querySelectorAll('.cor-dot').forEach(d => d.classList.remove('active'));
+                dotElement.classList.add('active');
+
+                // BOTÃO COMPRAR VOLTA AO NORMAL
+                const btnContainer = document.getElementById(`btn-container-${produtoId}`);
+                if (btnContainer && !produto.vendido) {
+                    const stringTamanhos = formatarTamanhosOrdenados(corObj.tamanhos);
+                    const mensagemWhats = encodeURIComponent(`Olá, UNNA! Amei o "${produto.nome}" na cor ${corObj.corOriginal} (Tamanhos: ${stringTamanhos}) do catálogo. Gostaria de verificar a disponibilidade para compra!`);
+                    btnContainer.innerHTML = `<a id="btn-compra-${produtoId}" href="https://wa.me/${WHATSAPP_NUMERO}?text=${mensagemWhats}" target="_blank" class="btn-whatsapp">Comprar</a>`;
+                }
+            }
+            function carregarMaisProdutos() {
+                // TRAVA DE SEGURANÇA DO SCROLL: Impede de carregar catálogo normal na aba de liquidação
+                if (modoLiquidacao) return;
+
+                if (carregandoMais || indiceExibicaoAtual >= produtosFiltradosGlobais.length) return;
+                const statusDiv = document.getElementById('scroll-status');
+                const grid = document.getElementById('product-grid');
+
+                const proximoLote = produtosFiltradosGlobais.slice(indiceExibicaoAtual, indiceExibicaoAtual + ITENS_POR_CARREGAMENTO);
+
+                proximoLote.forEach(p => {
+                    if (window.estadoVariantes[p.id] === undefined) window.estadoVariantes[p.id] = 0;
+                    if (window.estadoFotosCard[p.id] === undefined) window.estadoFotosCard[p.id] = 0;
+
+                    let corIndex = window.estadoVariantes[p.id];
+                    let corObj = p.coresAgrupadas[corIndex];
+
+                    const stringTamanhosAtual = formatarTamanhosOrdenados(corObj.tamanhos);
+                    const todosTamanhos = formatarTamanhosOrdenados(p.variantes);
+                    const todasCores = [...new Set(p.coresAgrupadas.map(c => c.corOriginal))].join(', ');
+
+                    // Gera as bolinhas de cor sem nenhuma marcada por padrão ao carregar
+                    let carrosselCoresHtml = '';
+                    if (p.coresAgrupadas.length > 1) {
+                        carrosselCoresHtml = '<div class="cores-container">';
+                        p.coresAgrupadas.forEach((c, index) => {
+                            // Nenhuma bolinha ganha a classe 'active' ao abrir o card
+                            carrosselCoresHtml += `<div class="cor-dot" style="background-image: url('${c.fotos[0]}')" onclick="trocarCor(event, ${p.id}, ${index}, this)" title="Cor: ${c.corOriginal}"></div>`;
+                        });
+                        carrosselCoresHtml += '</div>';
+                    }
+
+                    // --- GERA O TRILHO DESLIZANTE DE FOTOS E OS INDICADORES ---
+                    let todasAsFotosCard = [];
+                    p.variantes.forEach(v => {
+                        if (v.imagem && !todasAsFotosCard.includes(v.imagem)) todasAsFotosCard.push(v.imagem);
+                    });
+
+                    let trackImagensHtml = '';
+                    todasAsFotosCard.forEach((foto, i) => {
+                        // A foto atual recebe a classe para já nascer visível
+                        let classeVisivel = i === window.estadoFotosCard[p.id] ? 'active-img' : '';
+                        trackImagensHtml += `<img src="${foto}" class="${classeVisivel}" alt="${p.nome}" onclick="abrirModal(${p.id})" onerror="substituirPorPlaceholder(this)">`;
+                    });
+
+                    let indicadoresHtml = '';
+                    if (todasAsFotosCard.length > 1) {
+                        indicadoresHtml = `<div class="carousel-indicators" id="indicators-${p.id}">`;
+                        todasAsFotosCard.forEach((_, i) => {
+                            indicadoresHtml += `<div class="indicator-bar ${i === window.estadoFotosCard[p.id] ? 'active' : ''}"></div>`;
+                        });
+                        indicadoresHtml += `</div>`;
+                    }
+
+                    const mensagemWhats = encodeURIComponent(`Olá, UNNA! Amei o "${p.nome}" na cor ${corObj.corOriginal} (Tamanhos disponíveis: ${stringTamanhosAtual}) do catálogo. Gostaria de verificar a disponibilidade para compra!`);
+                    const linkWhats = `https://wa.me/${WHATSAPP_NUMERO}?text=${mensagemWhats}`;
+
+                    const card = document.createElement('div');
+                    card.className = `product-card ${p.vendido ? 'sold-item' : ''}`;
+
+                    // Lógica inteligente de exibir e riscar os tamanhos sem duplicar
+                    let esgotadaTexto = corObj.esgotada ? ' <span style="color: #d93025; font-size: 10px; font-weight: 700;">(ESGOTADA)</span>' : '';
+
+                    // NOVO: Lista de cores e tamanhos com visual limpo, elegante e leve
+                    let listaCoresTamanhosHtml = p.coresAgrupadas.map(c => {
+                        let tamanhosCor = gerarHtmlTamanhosCor(c);
+                        let esgotadaStatus = c.esgotada ? ' <span style="color: #d93025; font-size: 9px; font-weight: 600;">(ESGOTADA)</span>' : '';
+                        return `<div style="margin-bottom: 5px; font-size: 11px; font-weight: 400; color: var(--text-muted); letter-spacing: 0.03em;">
                         <span style="font-weight: 500; color: var(--text-main);">${c.corOriginal}</span>: <span class="destaque-tamanho" style="font-weight: 400; color: var(--text-muted);">${tamanhosCor}</span>${esgotadaStatus}
                     </div>`;
-                }).join('');
+                    }).join('');
 
-                card.innerHTML = `
+                    card.innerHTML = `
                    <div class="product-image-container">
                         ${p.destaque ? '<span class="badge badge-destaque">⭐ DESTAQUE</span>' : ''}
                         
@@ -3006,119 +3802,119 @@
                         <!-- 4. BOTÃO DE COMPRAR -->
                         <div id="btn-container-${p.id}" style="margin-top: auto;">
                             ${p.vendido ?
-                        '<button class="btn-whatsapp btn-sold" disabled>Indisponível</button>' :
-                        `<a id="btn-compra-${p.id}" href="${linkWhats}" target="_blank" class="btn-whatsapp">Comprar</a>`
-                    }
+                            '<button class="btn-whatsapp btn-sold" disabled>Indisponível</button>' :
+                            `<a id="btn-compra-${p.id}" href="${linkWhats}" target="_blank" class="btn-whatsapp">Comprar</a>`
+                        }
                         </div>
                     </div>
                 `;
-                grid.appendChild(card);
-                iniciarCarrosselAutomatico(p.id);
-            });
+                    grid.appendChild(card);
+                    iniciarCarrosselAutomatico(p.id);
+                });
 
-            indiceExibicaoAtual += proximoLote.length;
+                indiceExibicaoAtual += proximoLote.length;
 
-            if (indiceExibicaoAtual >= produtosFiltradosGlobais.length) {
-                statusDiv.textContent = '• VOCÊ CHEGOU AO FIM DO CATÁLOGO •';
-                statusDiv.style.display = 'block';
-            } else {
-                statusDiv.textContent = 'Carregando mais peças...';
-                statusDiv.style.display = 'block';
+                if (indiceExibicaoAtual >= produtosFiltradosGlobais.length) {
+                    statusDiv.textContent = '• VOCÊ CHEGOU AO FIM DO CATÁLOGO •';
+                    statusDiv.style.display = 'block';
+                } else {
+                    statusDiv.textContent = 'Carregando mais peças...';
+                    statusDiv.style.display = 'block';
+                }
+
+                carregandoMais = false;
             }
 
-            carregandoMais = false;
-        }
+            // --- FUNÇÃO PARA PASSAR TODAS AS FOTOS AUTOMATICAMENTE (DESLIZANDO) ---
+            function iniciarCarrosselAutomatico(produtoId) {
+                const produto = produtos.find(p => p.id === produtoId);
+                if (!produto) return;
 
-        // --- FUNÇÃO PARA PASSAR TODAS AS FOTOS AUTOMATICAMENTE (DESLIZANDO) ---
-        function iniciarCarrosselAutomatico(produtoId) {
-            const produto = produtos.find(p => p.id === produtoId);
-            if (!produto) return;
-
-            let todasAsFotos = [];
-            produto.variantes.forEach(v => {
-                if (v.imagem && !todasAsFotos.includes(v.imagem)) {
-                    todasAsFotos.push(v.imagem);
-                }
-            });
-
-            if (todasAsFotos.length > 1) {
-                window.intervalosCarrossel[produtoId] = setInterval(() => {
-                    const trackElement = document.getElementById(`track-${produtoId}`);
-                    if (!trackElement) return;
-
-                    let indiceAtualFoto = window.estadoFotosCard[produtoId] || 0;
-                    indiceAtualFoto = (indiceAtualFoto + 1) % todasAsFotos.length;
-                    window.estadoFotosCard[produtoId] = indiceAtualFoto;
-
-                    // O segredo do efeito suave (Fade)
-                    const imagens = trackElement.querySelectorAll('img');
-                    imagens.forEach((img, i) => {
-                        if (i === indiceAtualFoto) img.classList.add('active-img');
-                        else img.classList.remove('active-img');
-                    });
-
-                    const indContainer = document.getElementById(`indicators-${produtoId}`);
-
-                    // --- MÁGICA: ATUALIZA A ETIQUETA DE ESGOTADO CONFORME A FOTO QUE ESTÁ PASSANDO ---
-                    const fotoAtualUrl = todasAsFotos[indiceAtualFoto];
-                    const corDestaFoto = produto.coresAgrupadas.find(c => c.fotos.includes(fotoAtualUrl));
-                    const badgeSold = document.getElementById(`badge-sold-${produtoId}`);
-
-                    if (badgeSold && !produto.vendido) {
-                        if (corDestaFoto && corDestaFoto.esgotada) {
-                            badgeSold.style.display = 'block';
-                            badgeSold.textContent = 'COR ESGOTADA';
-                        } else {
-                            badgeSold.style.display = 'none';
-                        }
+                let todasAsFotos = [];
+                produto.variantes.forEach(v => {
+                    if (v.imagem && !todasAsFotos.includes(v.imagem)) {
+                        todasAsFotos.push(v.imagem);
                     }
+                });
 
-                }, 4000);
-            }
-        }
+                if (todasAsFotos.length > 1) {
+                    window.intervalosCarrossel[produtoId] = setInterval(() => {
+                        const trackElement = document.getElementById(`track-${produtoId}`);
+                        if (!trackElement) return;
 
-        function configurarObservadorRolagem() {
-            window.addEventListener('scroll', () => {
-                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 400) {
-                    carregarMaisProdutos();
+                        let indiceAtualFoto = window.estadoFotosCard[produtoId] || 0;
+                        indiceAtualFoto = (indiceAtualFoto + 1) % todasAsFotos.length;
+                        window.estadoFotosCard[produtoId] = indiceAtualFoto;
+
+                        // O segredo do efeito suave (Fade)
+                        const imagens = trackElement.querySelectorAll('img');
+                        imagens.forEach((img, i) => {
+                            if (i === indiceAtualFoto) img.classList.add('active-img');
+                            else img.classList.remove('active-img');
+                        });
+
+                        const indContainer = document.getElementById(`indicators-${produtoId}`);
+
+                        // --- MÁGICA: ATUALIZA A ETIQUETA DE ESGOTADO CONFORME A FOTO QUE ESTÁ PASSANDO ---
+                        const fotoAtualUrl = todasAsFotos[indiceAtualFoto];
+                        const corDestaFoto = produto.coresAgrupadas.find(c => c.fotos.includes(fotoAtualUrl));
+                        const badgeSold = document.getElementById(`badge-sold-${produtoId}`);
+
+                        if (badgeSold && !produto.vendido) {
+                            if (corDestaFoto && corDestaFoto.esgotada) {
+                                badgeSold.style.display = 'block';
+                                badgeSold.textContent = 'COR ESGOTADA';
+                            } else {
+                                badgeSold.style.display = 'none';
+                            }
+                        }
+
+                    }, 4000);
                 }
-            });
-        }
+            }
 
-        function substituirPorPlaceholder(imgElement) {
-            imgElement.onerror = null;
-            imgElement.parentElement.classList.add('placeholder-svg');
-            imgElement.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%23d9d9d9' stroke-width='1' stroke-linecap='round' stroke-linejoin='round' style='margin:auto;'><rect x='3' y='3' width='18' height='18' rx='2' ry='2'/><circle cx='8.5' cy='8.5' r='1.5'/><polyline points='21 15 16 10 5 21'/></svg>";
-        }
+            function configurarObservadorRolagem() {
+                window.addEventListener('scroll', () => {
+                    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 400) {
+                        carregarMaisProdutos();
+                    }
+                });
+            }
 
-        function abrirModal(idProduto) {
-            const produto = produtos.find(p => p.id === idProduto);
-            if (!produto) return;
+            function substituirPorPlaceholder(imgElement) {
+                imgElement.onerror = null;
+                imgElement.parentElement.classList.add('placeholder-svg');
+                imgElement.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%23d9d9d9' stroke-width='1' stroke-linecap='round' stroke-linejoin='round' style='margin:auto;'><rect x='3' y='3' width='18' height='18' rx='2' ry='2'/><circle cx='8.5' cy='8.5' r='1.5'/><polyline points='21 15 16 10 5 21'/></svg>";
+            }
 
-            let corIndex = window.estadoVariantes[idProduto] || 0;
-            let corObj = produto.coresAgrupadas[corIndex];
+            function abrirModal(idProduto) {
+                const produto = produtos.find(p => p.id === idProduto);
+                if (!produto) return;
 
-            // Puxa a foto certa considerando o trilho global
-            let todasAsFotos = [];
-            produto.variantes.forEach(v => {
-                if (v.imagem && !todasAsFotos.includes(v.imagem)) todasAsFotos.push(v.imagem);
-            });
+                let corIndex = window.estadoVariantes[idProduto] || 0;
+                let corObj = produto.coresAgrupadas[corIndex];
 
-            let fotoIndex = window.estadoFotosCard[idProduto] || 0;
-            let fotoAtual = todasAsFotos[fotoIndex];
+                // Puxa a foto certa considerando o trilho global
+                let todasAsFotos = [];
+                produto.variantes.forEach(v => {
+                    if (v.imagem && !todasAsFotos.includes(v.imagem)) todasAsFotos.push(v.imagem);
+                });
 
-            const stringTamanhosAtual = formatarTamanhosOrdenados(corObj.tamanhos);
+                let fotoIndex = window.estadoFotosCard[idProduto] || 0;
+                let fotoAtual = todasAsFotos[fotoIndex];
 
-            const modal = document.getElementById('image-modal');
-            const modalImg = document.getElementById('modal-img');
-            const modalCaption = document.getElementById('modal-caption');
-            const modalPrices = document.getElementById('modal-prices');
-            const modalBtnContainer = document.getElementById('modal-btn-container');
+                const stringTamanhosAtual = formatarTamanhosOrdenados(corObj.tamanhos);
 
-            modalImg.src = fotoAtual;
-            modalCaption.textContent = `${produto.nome} - ${corObj.corOriginal} (Tam: ${stringTamanhosAtual})`;
+                const modal = document.getElementById('image-modal');
+                const modalImg = document.getElementById('modal-img');
+                const modalCaption = document.getElementById('modal-caption');
+                const modalPrices = document.getElementById('modal-prices');
+                const modalBtnContainer = document.getElementById('modal-btn-container');
 
-            modalPrices.innerHTML = `
+                modalImg.src = fotoAtual;
+                modalCaption.textContent = `${produto.nome} - ${corObj.corOriginal} (Tam: ${stringTamanhosAtual})`;
+
+                modalPrices.innerHTML = `
                 <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                     <div class="modal-price-installments">${calcularParcelamento(produto.por)}</div>
                     <div class="modal-price-total">R$ ${produto.por}</div>
@@ -3126,33 +3922,33 @@
                 </div>
             `;
 
-            const mensagemWhats = encodeURIComponent(`Olá, UNNA! Amei o "${produto.nome}" na cor ${corObj.corOriginal} (Tamanhos disponíveis: ${stringTamanhosAtual}) do catálogo. Gostaria de verificar a disponibilidade para compra!`);
-            const linkWhats = `https://wa.me/${WHATSAPP_NUMERO}?text=${mensagemWhats}`;
+                const mensagemWhats = encodeURIComponent(`Olá, UNNA! Amei o "${produto.nome}" na cor ${corObj.corOriginal} (Tamanhos disponíveis: ${stringTamanhosAtual}) do catálogo. Gostaria de verificar a disponibilidade para compra!`);
+                const linkWhats = `https://wa.me/${WHATSAPP_NUMERO}?text=${mensagemWhats}`;
 
-            if (produto.vendido) {
-                modalBtnContainer.innerHTML = `<button class="modal-btn-whatsapp btn-sold" disabled>Indisponível</button>`;
-            } else {
-                modalBtnContainer.innerHTML = `<a href="${linkWhats}" target="_blank" class="modal-btn-whatsapp">COMPRAR AGORA NO WHATSAPP</a>`;
+                if (produto.vendido) {
+                    modalBtnContainer.innerHTML = `<button class="modal-btn-whatsapp btn-sold" disabled>Indisponível</button>`;
+                } else {
+                    modalBtnContainer.innerHTML = `<a href="${linkWhats}" target="_blank" class="modal-btn-whatsapp">COMPRAR AGORA NO WHATSAPP</a>`;
+                }
+
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
             }
 
-            modal.classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function fecharModal(event) {
-            if (!event || event.target.id === 'image-modal' || event.target.classList.contains('modal-close')) {
-                const modal = document.getElementById('image-modal');
-                modal.classList.remove('show');
-                document.body.style.overflow = '';
+            function fecharModal(event) {
+                if (!event || event.target.id === 'image-modal' || event.target.classList.contains('modal-close')) {
+                    const modal = document.getElementById('image-modal');
+                    modal.classList.remove('show');
+                    document.body.style.overflow = '';
+                }
             }
-        }
 
-        document.addEventListener('keydown', function (event) {
-            if (event.key === "Escape") {
-                fecharModal();
-            }
-        });
-    </script>
+            document.addEventListener('keydown', function (event) {
+                if (event.key === "Escape") {
+                    fecharModal();
+                }
+            });
+        </script>
 </body>
 
 </html>
