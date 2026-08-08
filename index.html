@@ -376,8 +376,21 @@
             position: relative;
             width: 100%;
             padding-top: 140%;
-            background-color: #fafafa;
+            background-color: #fcfcfc;
             overflow: hidden;
+            border-radius: 6px;
+            /* Cantos sutilmente arredondados, super elegantes */
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            /* Uma bordinha quase imperceptível que dá acabamento */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            /* Sombra suave que dá a sensação de profundidade e leveza */
+            transition: var(--transition);
+        }
+
+        /* Um leve destaque ao passar o mouse para dar vida ao card */
+        .product-card:hover .product-image-container {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            border-color: rgba(0, 0, 0, 0.08);
         }
 
         /* --- ESTRUTURA DO CARROSSEL (EFEITO FADE SUAVE) --- */
@@ -514,7 +527,8 @@
         }
 
         .product-info {
-            padding: 20px 0 0 0;
+            padding: 12px 0 0 0;
+            /* Reduzido de 20px para 12px para aproximar da foto */
             display: flex;
             flex-direction: column;
             flex-grow: 1;
@@ -557,73 +571,116 @@
             letter-spacing: 0.03em;
         }
 
-        /* --- BOLINHAS DE CORES DIFERENTES --- */
+        /* --- BOLINHAS DE CORES (Formato Circular Perfeito com Zoom Equilibrado) --- */
         .cores-container {
             display: flex;
-            gap: 8px;
+            gap: 12px;
             margin-bottom: 12px;
-            padding: 4px 6px;
+            padding: 6px 2px;
             overflow-x: auto;
+            align-items: center;
         }
 
         .cor-dot {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background-size: cover;
+            width: 46px;
+            height: 46px;
+            min-width: 46px;
+            min-height: 46px;
+            border-radius: 50% !important;
+            background-size: 145%;
+            /* Zoom inteligente que preenche a bolinha inteira sem cortes drásticos nas laterais */
             background-position: center;
+            background-repeat: no-repeat;
             cursor: pointer;
-            border: 1px solid var(--border-color);
-            transition: var(--transition);
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
             position: relative;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            outline: none;
         }
 
         .cor-dot:hover {
-            border-color: var(--accent-color);
+            border-color: #888888;
+            transform: scale(1.05);
         }
 
+        /* Contorno preto limpo ao clicar/selecionar */
         .cor-dot.active {
-            border-color: var(--primary-color);
+            border: 3px solid #000000 !important;
             transform: scale(1.1);
-            box-shadow: 0 0 0 1px var(--primary-color);
+            box-shadow: none !important;
         }
 
         .product-size {
-            font-size: 11px;
-            letter-spacing: 0.04em;
-            color: var(--primary-color);
-            margin-bottom: 18px;
+            font-size: 10px;
+            /* Rótulos um pouco menores e mais delicados */
+            letter-spacing: 0.08em;
+            color: #888888;
+            /* Cinza suave para os títulos "Cor:" e "Tam.:" */
+            margin-bottom: 16px;
+            /* Espaçamento exato até a linha do preço */
             font-weight: 500;
             text-transform: uppercase;
-            background-color: #f7f7f7;
-            padding: 8px 12px;
-            border-radius: 4px;
-            border-left: 3px solid var(--primary-color);
-            display: inline-block;
-            line-height: 1.6;
+            border: none;
+            /* Remove a linha dupla indesejada! */
+            line-height: 1.8;
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .product-size b {
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 11px;
+            /* Valor da cor mais destacado */
         }
 
         .destaque-tamanho {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 800;
-            color: #000000;
+            color: var(--text-main);
+            letter-spacing: 0.05em;
         }
 
         /* --- CONTAINER DE PREÇOS (Estilo Grife Premium) --- */
         .product-price-container {
-            margin-top: auto;
-            margin-bottom: 20px;
+            margin-top: 6px;
+            /* Respiro após o título da peça */
+            margin-bottom: 18px;
+            /* Respiro antes das bolinhas de cores */
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            /* Respiro elegante entre as formas de pagamento */
-            border-top: 1px solid var(--border-color);
-            /* Linha divisória sutil que emoldura o preço */
-            padding-top: 16px;
+            gap: 4px;
+            /* Diminui o espaço geral para controlar linha a linha */
         }
 
-        /* Valor base sutil e elegante */
+        /* 1. Preço Parcelado (Em destaque) */
+        .price-installments {
+            font-size: 19px;
+            /* Um pontinho maior para dar bastante força ao número */
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: -0.02em;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            /* <-- O respiro ideal perfeito entre o número e o texto! */
+        }
+
+        .price-installments .price-small {
+            font-size: 9px;
+            /* Micro-cópia delicada */
+            font-weight: 500;
+            color: #999999;
+            /* Cinza um tom mais claro e elegante */
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            /* Letras mais afastadas dão muito ar de luxo */
+            margin-bottom: 8px;
+            /* Empurra o "R$ 189,90" um pouco mais para baixo */
+        }
+
+        /* 2. Valor Total (Sutil) */
         .price-total {
             font-size: 13px;
             color: var(--text-muted);
@@ -631,37 +688,16 @@
             letter-spacing: 0.02em;
         }
 
-        /* Destaque do Parcelamento com números imponentes */
-        .price-installments {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--primary-color);
-            letter-spacing: -0.01em;
-            display: flex;
-            flex-direction: column;
-            /* O próprio CSS joga o "sem juros" para baixo perfeitamente */
-            gap: 3px;
-        }
-
-        /* Micro-cópia em caixa alta (típico de marcas de luxo) */
-        .price-installments .price-small {
-            font-size: 10px;
-            font-weight: 500;
-            color: var(--accent-color);
-            text-transform: uppercase;
-            /* Força o "SEM JUROS" ficar maiúsculo */
-            letter-spacing: 0.08em;
-        }
-
-        /* PIX com verde sofisticado e perfeitamente alinhado */
+        /* 3. Valor no PIX (Com respiro superior) */
         .price-pix {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             color: #1b4b27;
-            /* Verde escuro e fechado (mais chique) */
             display: flex;
             align-items: baseline;
             gap: 4px;
+            margin-top: 2px;
+            /* Dá um leve distanciamento do valor total */
         }
 
         .price-pix .price-small {
@@ -1401,7 +1437,7 @@
             {
                 "id": 12,
                 "nome": "Vestido midi",
-                "por": "289.90",
+                "por": "289,90",
                 "vendido": false,
                 "destaque": false,
                 "variantes": [
@@ -2454,7 +2490,7 @@
             let valorParcela = (valorNum / maxParcelas).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
             // O CSS agora faz a quebra de linha e gruda o texto
-            return `até ${maxParcelas}x de R$ ${valorParcela} <span class="price-small">sem juros</span>`;
+            return `${maxParcelas}x de R$ ${valorParcela} <span class="price-small">sem juros</span>`;
         }
 
         const ITENS_POR_CARREGAMENTO = 24;
@@ -2820,16 +2856,12 @@
 
             const trackElement = document.getElementById(`track-${produtoId}`);
             if (trackElement) {
-                // Em vez de empurrar, ele dissolve a imagem certa
                 const imagens = trackElement.querySelectorAll('img');
                 imagens.forEach((img, i) => {
                     if (i === fotoIndex) img.classList.add('active-img');
                     else img.classList.remove('active-img');
                 });
             }
-
-            // MÁGICA DOS TAMANHOS RISCADOS E ETIQUETA NA FOTO
-            let htmlTamanhosDestaCor = gerarHtmlTamanhosCor(corObj);
 
             const badgeSold = document.getElementById(`badge-sold-${produtoId}`);
             if (badgeSold) {
@@ -2841,9 +2873,14 @@
                 }
             }
 
+            // Atualiza o texto dinâmico da cor selecionada
             let esgotadaTexto = corObj.esgotada ? ' <span style="color: #d93025; font-size: 10px; font-weight: 700;">(ESGOTADA)</span>' : '';
-            document.getElementById(`size-${produtoId}`).innerHTML = `Cor: <b>${corObj.corOriginal}</b>${esgotadaTexto} <br>Tam. desta cor: <span class="destaque-tamanho">${htmlTamanhosDestaCor}</span>`;
+            const textoCorElement = document.getElementById(`cor-selecionada-${produtoId}`);
+            if (textoCorElement) {
+                textoCorElement.innerHTML = `Cor: <b>${corObj.corOriginal}</b>${esgotadaTexto}`;
+            }
 
+            // GARANTE O CONTORNO PRETO NA BOLINHA CLICADA E REMOVE DAS OUTRAS
             const container = dotElement.parentElement;
             container.querySelectorAll('.cor-dot').forEach(d => d.classList.remove('active'));
             dotElement.classList.add('active');
@@ -2856,7 +2893,6 @@
                 btnContainer.innerHTML = `<a id="btn-compra-${produtoId}" href="https://wa.me/${WHATSAPP_NUMERO}?text=${mensagemWhats}" target="_blank" class="btn-whatsapp">Comprar</a>`;
             }
         }
-
         function carregarMaisProdutos() {
             if (carregandoMais || indiceExibicaoAtual >= produtosFiltradosGlobais.length) return;
 
@@ -2877,12 +2913,13 @@
                 const todosTamanhos = formatarTamanhosOrdenados(p.variantes);
                 const todasCores = [...new Set(p.coresAgrupadas.map(c => c.corOriginal))].join(', ');
 
-                // Gera as bolinhas de cor
+                // Gera as bolinhas de cor sem nenhuma marcada por padrão ao carregar
                 let carrosselCoresHtml = '';
                 if (p.coresAgrupadas.length > 1) {
                     carrosselCoresHtml = '<div class="cores-container">';
                     p.coresAgrupadas.forEach((c, index) => {
-                        carrosselCoresHtml += `<div class="cor-dot ${index === corIndex ? 'active' : ''}" style="background-image: url('${c.fotos[0]}')" onclick="trocarCor(event, ${p.id}, ${index}, this)" title="Cor: ${c.corOriginal}"></div>`;
+                        // Nenhuma bolinha ganha a classe 'active' ao abrir o card
+                        carrosselCoresHtml += `<div class="cor-dot" style="background-image: url('${c.fotos[0]}')" onclick="trocarCor(event, ${p.id}, ${index}, this)" title="Cor: ${c.corOriginal}"></div>`;
                     });
                     carrosselCoresHtml += '</div>';
                 }
@@ -2916,8 +2953,16 @@
                 card.className = `product-card ${p.vendido ? 'sold-item' : ''}`;
 
                 // Lógica inteligente de exibir e riscar os tamanhos sem duplicar
-                let htmlTamanhosDestaCor = gerarHtmlTamanhosCor(corObj);
                 let esgotadaTexto = corObj.esgotada ? ' <span style="color: #d93025; font-size: 10px; font-weight: 700;">(ESGOTADA)</span>' : '';
+
+                // NOVO: Lista de cores e tamanhos com visual limpo, elegante e leve
+                let listaCoresTamanhosHtml = p.coresAgrupadas.map(c => {
+                    let tamanhosCor = gerarHtmlTamanhosCor(c);
+                    let esgotadaStatus = c.esgotada ? ' <span style="color: #d93025; font-size: 9px; font-weight: 600;">(ESGOTADA)</span>' : '';
+                    return `<div style="margin-bottom: 5px; font-size: 11px; font-weight: 400; color: var(--text-muted); letter-spacing: 0.03em;">
+                        <span style="font-weight: 500; color: var(--text-main);">${c.corOriginal}</span>: <span class="destaque-tamanho" style="font-weight: 400; color: var(--text-muted);">${tamanhosCor}</span>${esgotadaStatus}
+                    </div>`;
+                }).join('');
 
                 card.innerHTML = `
                    <div class="product-image-container">
@@ -2936,28 +2981,30 @@
                         ${indicadoresHtml}
                     </div>
                     <div class="product-info">
-                        <span class="product-category">${p.nome.split(' ')[0]}</span>
                         <h3 class="product-title">${p.nome}</h3>
                         
-                        <div class="product-all-sizes">Tamanhos: ${todosTamanhos}</div>
-                        <div class="product-all-colors">Cores: ${todasCores}</div>
-                        
-                        ${carrosselCoresHtml}
-                        
-                        <div>
-                            <div class="product-size" id="size-${p.id}">
-                                Cor: <b>${corObj.corOriginal}</b>${esgotadaTexto} <br>
-                                Tam. desta cor: <span class="destaque-tamanho">${htmlTamanhosDestaCor}</span>
-                            </div>
-                        </div>
-                        
+                        <!-- 1. PREÇOS -->
                         <div class="product-price-container">
-                            <div class="price-total">R$ ${p.por}</div>
                             <div class="price-installments">${calcularParcelamento(p.por)}</div>
+                            <div class="price-total">R$ ${p.por}</div>
                             <div class="price-pix">R$ ${calcularDesconto(p.por)} <span class="price-small">no PIX (10% OFF)</span></div>
                         </div>
 
-                        <div id="btn-container-${p.id}">
+                        <!-- 2. BOLINHAS DE CORES -->
+                        ${carrosselCoresHtml}
+                        
+                        <!-- 3. NOME DA COR ATUAL E A LISTA DE CORES/TAMANHOS -->
+                        <div>
+                            <div class="product-size">
+                                <div id="cor-selecionada-${p.id}" style="margin-bottom: 8px; font-size: 11px;">Cor: <b>${corObj.corOriginal}</b>${esgotadaTexto}</div>
+                                <div style="border-top: 1px dashed var(--border-color); padding-top: 8px; margin-top: 4px;">
+                                    ${listaCoresTamanhosHtml}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. BOTÃO DE COMPRAR -->
+                        <div id="btn-container-${p.id}" style="margin-top: auto;">
                             ${p.vendido ?
                         '<button class="btn-whatsapp btn-sold" disabled>Indisponível</button>' :
                         `<a id="btn-compra-${p.id}" href="${linkWhats}" target="_blank" class="btn-whatsapp">Comprar</a>`
@@ -3073,8 +3120,8 @@
 
             modalPrices.innerHTML = `
                 <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-                    <div class="modal-price-total">R$ ${produto.por}</div>
                     <div class="modal-price-installments">${calcularParcelamento(produto.por)}</div>
+                    <div class="modal-price-total">R$ ${produto.por}</div>
                     <div class="modal-price-pix">R$ ${calcularDesconto(produto.por)} <span class="price-small">no PIX (10% OFF)</span></div>
                 </div>
             `;
