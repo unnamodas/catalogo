@@ -3182,7 +3182,7 @@
                         <span class="badge badge-sold" style="display: ${p.vendido ? 'block' : 'none'};">ESGOTADO</span>
                         
                         <div class="carousel-track">
-                            <img src="${p.imagem}" class="active-img" alt="${p.nome}" onerror="substituirPorPlaceholder(this)">
+                            <img src="${p.imagem}" loading="lazy" class="active-img" alt="${p.nome}" onerror="substituirPorPlaceholder(this)">
                         </div>
                     </div>
                     <div class="product-info">
@@ -3707,7 +3707,7 @@
                 todasAsFotosCard.forEach((foto, i) => {
                     // A foto atual recebe a classe para já nascer visível
                     let classeVisivel = i === window.estadoFotosCard[p.id] ? 'active-img' : '';
-                    trackImagensHtml += `<img src="${foto}" class="${classeVisivel}" alt="${p.nome}" onclick="abrirModal(${p.id})" onerror="substituirPorPlaceholder(this)">`;
+                    trackImagensHtml += `<img src="${foto}" loading="lazy" class="${classeVisivel}" alt="${p.nome}" onclick="abrirModal(${p.id})" onerror="substituirPorPlaceholder(this)">`;
                 });
 
                 let indicadoresHtml = '';
@@ -3760,7 +3760,7 @@
                         <div class="product-price-container">
                             <div class="price-installments">${calcularParcelamento(p.por)}</div>
                             <div class="price-total">R$ ${p.por}</div>
-                            <div class="price-pix">R$ ${calcularDesconto(p.por)} <span class="price-small">no PIX (10% OFF)</span></div>
+                            <div class="price-pix">R$ ${calcularDesconto(p.por)}</div>
                         </div>
 
                         <!-- 2. BOLINHAS DE CORES -->
@@ -3895,7 +3895,7 @@
                 <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                     <div class="modal-price-installments">${calcularParcelamento(produto.por)}</div>
                     <div class="modal-price-total">R$ ${produto.por}</div>
-                    <div class="modal-price-pix">R$ ${calcularDesconto(produto.por)} <span class="price-small">no PIX (10% OFF)</span></div>
+                    <div class="modal-price-pix">R$ ${calcularDesconto(produto.por)}</div>
                 </div>
             `;
 
