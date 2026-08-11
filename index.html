@@ -550,7 +550,6 @@
             color: var(--text-main);
             margin-bottom: 8px;
             line-height: 1.2;
-            text-transform: capitalize;
         }
 
         .product-all-sizes {
@@ -810,8 +809,10 @@
             background-color: #ffffff;
             color: #000000;
             text-decoration: none;
-            padding: 16px 24px;
-            font-size: 12px;
+            padding: 12px 20px;
+            /* Botão mais fino */
+            font-size: 11px;
+            /* Fonte levemente menor */
             font-weight: 700;
             letter-spacing: 0.15em;
             text-transform: uppercase;
@@ -869,7 +870,7 @@
             display: none;
         }
 
-        /* --- MODAL DE ZOOM --- */
+        /* --- MODAL DE ZOOM (CORREÇÃO DEFINITIVA PC E CELULAR) --- */
         .modal-overlay {
             display: flex;
             position: fixed;
@@ -878,33 +879,37 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.88);
-            backdrop-filter: blur(6px);
+            background-color: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(8px);
             justify-content: center;
-            align-items: center;
-            padding: 20px;
+            align-items: flex-start;
+            /* Permite rolar a tela se o PC for pequeno */
+            overflow-y: auto;
+            /* A rolagem fica na tela toda, não só na foto */
+            padding: 40px 20px;
             opacity: 0;
             visibility: hidden;
-            pointer-events: none;
             transition: opacity 0.35s ease, visibility 0.35s ease;
         }
 
         .modal-overlay.show {
             opacity: 1;
             visibility: visible;
-            pointer-events: auto;
         }
 
         .modal-content {
             position: relative;
-            max-width: 95vw;
-            max-height: 95vh;
+            margin: auto;
+            /* Mágica para centralizar perfeitamente */
+            width: 100%;
+            max-width: 420px;
+            /* Largura ideal para o computador não espremer o texto */
             display: flex;
             flex-direction: column;
             align-items: center;
-            transform: scale(0.88);
+            transform: scale(0.95);
             opacity: 0;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+            transition: transform 0.4s ease, opacity 0.35s ease;
         }
 
         .modal-overlay.show .modal-content {
@@ -913,47 +918,61 @@
         }
 
         .modal-content img {
-            max-width: 100%;
-            max-height: 70vh;
+            width: 100%;
+            max-height: 55vh;
+            /* Altura máxima da foto */
             object-fit: contain;
-            border-radius: 2px;
-            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
-            background-color: transparent;
+            border-radius: 6px;
         }
 
+        /* --- Botão 'X' Minimalista e Elegante --- */
         .modal-close {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            width: 44px;
-            height: 44px;
-            background-color: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            /* Remove o fundo */
             color: #ffffff;
-            font-size: 26px;
-            font-weight: 300;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            font-size: 42px;
+            /* Fica maior, porém mais delicado */
+            font-weight: 200;
+            /* Deixa o traço bem fininho */
+            border: none;
+            /* Remove a borda redonda */
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 10;
-            transition: var(--transition);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            z-index: 100000;
+            opacity: 0.5;
+            /* Fica meio transparente por padrão */
+            transition: opacity 0.3s ease;
+            line-height: 0.8;
+            padding-bottom: 4px;
         }
 
         .modal-close:hover {
-            background-color: #ffffff;
-            color: #000000;
+            background: transparent;
+            /* Mantém sem fundo */
+            opacity: 1;
+            /* Fica 100% branco ao passar o mouse */
+            color: #ffffff;
+            transform: none;
+            /* Remove o efeito de pular na tela */
         }
 
         .modal-info-box {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-top: 15px;
+            margin-top: 10px;
+            /* Margem superior reduzida */
             width: 100%;
             max-width: 400px;
+            padding-bottom: 10px;
+            /* Margem inferior reduzida */
         }
 
         .modal-caption {
@@ -1343,7 +1362,7 @@
         const produtos = [
             {
                 "id": 1,
-                "nome": "Blusa Detalhe",
+                "nome": "Blusa detalhe",
                 "por": "179,90",
                 "vendido": false,
                 "destaque": false,
@@ -2227,7 +2246,7 @@
             },
             {
                 "id": 78,
-                "nome": "Blusa decote v",
+                "nome": "Blusa decote V",
                 "por": "217,90",
                 "vendido": false,
                 "destaque": false,
@@ -2305,7 +2324,7 @@
             },
             {
                 "id": 84,
-                "nome": "Blusa Detalhes Decote",
+                "nome": "Blusa detalhes decote",
                 "por": "139,90",
                 "vendido": false,
                 "destaque": false,
@@ -2378,7 +2397,7 @@
             },
             {
                 "id": 90,
-                "nome": "Blusa Detalhe Alça",
+                "nome": "Blusa detalhe alça",
                 "por": "139,90",
                 "vendido": false,
                 "destaque": false,
@@ -2390,7 +2409,7 @@
             },
             {
                 "id": 90,
-                "nome": "Blusa Detalhe Frontal",
+                "nome": "Blusa detalhe frontal",
                 "por": "249,90",
                 "vendido": false,
                 "destaque": false,
@@ -2451,7 +2470,7 @@
             },
             {
                 "id": 95,
-                "nome": "Blusa Detalhe Ombro",
+                "nome": "Blusa detalhe ombro",
                 "por": "179,90",
                 "vendido": false,
                 "destaque": false,
@@ -2638,6 +2657,132 @@
                 ]
                 /* id código bling: 800262 join */
             },
+            {
+                "id": 111,
+                "nome": "Conjunto colete e calça",
+                "por": "279,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Azul marinho", "tamanho": "G2", "imagem": "fotos/conjunto_3azma.jpg" },
+                    { "cor": "Marrrom", "tamanho": "G1", "imagem": "fotos/conjunto_3mar.jpg" },
+                ]
+                /* id código bling: colete/calça giz viel*/
+            },
+            {
+                "id": 112,
+                "nome": "Conjunto blusa e calça",
+                "por": "349,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Preto", "tamanho": "50", "imagem": "fotos/conjunto_4.jpg" },
+                ]
+                /* id código bling: 130250 pred*/
+            },
+            {
+                "id": 113,
+                "nome": "Conjunto blusa e calça",
+                "por": "179,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Bege/Preto", "tamanho": "46, 52, 54", "imagem": "fotos/conjunto_5.jpg" },
+                ]
+                /* id código bling: 1065 cal*/
+            },
+            {
+                "id": 114,
+                "nome": "Conjunto blusa e calça",
+                "por": "369,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Bege", "tamanho": "46", "imagem": "fotos/conjunto_6.jpg" },
+                ]
+                /* id código bling: 6275 tuba*/
+            },
+            {
+                "id": 115,
+                "nome": "Conjunto camisa e calça",
+                "por": "459,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Terracota", "tamanho": "46, 48", "imagem": "fotos/conjunto_7ter.jpg" },
+                ]
+                /* id código bling: 12991 pred*/
+            },
+            {
+                "id": 116,
+                "nome": "Conjunto camisa e calça",
+                "por": "249,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Marrom", "tamanho": "46", "imagem": "fotos/conjunto_8mar.jpg" },
+                    { "cor": "Terracota", "tamanho": "48, 50", "imagem": "fotos/conjunto_8pre.jpg" },
+                ]
+                /* id código bling: 3039 sabo*/
+            },
+            {
+                "id": 117,
+                "nome": "Conjunto camisa e calça",
+                "por": "249,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Azul", "tamanho": "48", "imagem": "fotos/conjunto_9az.jpg" },
+                    { "cor": "Preto", "tamanho": "48", "imagem": "fotos/conjunto_9pre.jpg" },
+                ]
+                /* id código bling: 3048 sabo*/
+            },
+            {
+                "id": 118,
+                "nome": "Conjunto moletinho",
+                "por": "249,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Bege/Preto", "tamanho": "G2", "imagem": "fotos/conjunto_10.jpg" },
+                ]
+                /* id código bling: moletinho vero*/
+            },
+            {
+                "id": 119,
+                "nome": "Conjunto colete e saia",
+                "por": "249,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "Preto", "tamanho": "G1", "imagem": "fotos/conjunto_11pre.jpg" },
+                    { "cor": "Marrom", "tamanho": "G1, G2", "imagem": "fotos/conjunto_11mar.jpg" },
+                ]
+                /* id código bling: cosaco viel*/
+            },
+            {
+                "id": 120,
+                "nome": "Conjunto blusa e bermuda",
+                "por": "249,90",
+                "vendido": false,
+                "destaque": false,
+                "novidade": false,
+                "variantes": [
+                    { "cor": "bege", "tamanho": "G(Slim)", "imagem": "fotos/conjunto_12.jpg" },
+                    { "cor": "Bege", "tamanho": "G(Slim)", "imagem": "fotos/conjunto_12ft2.jpg" },
+                ]
+                /* id código bling: conjunto slim darl*/
+            },
+
 
 
 
@@ -3258,7 +3403,7 @@
             },
             {
                 "id": "liq_66",
-                "nome": "Short Saia",
+                "nome": "Short saia",
                 "de": "170,00",
                 "por": "59",
                 "desconto": 65,
@@ -4020,13 +4165,27 @@
             const modalBtnContainer = document.getElementById('modal-btn-container');
 
             modalImg.src = fotoAtual;
-            modalCaption.textContent = `${produto.nome} - ${corObj.corOriginal} (Tam: ${stringTamanhosAtual})`;
+            // 1. Título, Cor e Tamanho mais compactos
+            modalCaption.innerHTML = `
+                <div style="font-size: 20px; line-height: 1.1; margin-bottom: 4px;">${produto.nome}</div>
+                <div style="font-family: 'Inter', sans-serif; font-size: 10px; color: #a0a0a0; letter-spacing: 0.1em; text-transform: uppercase;">
+                    <b style="color: #ffffff; font-weight: 600;">Cor:</b> ${corObj.corOriginal} &nbsp;•&nbsp; <b style="color: #ffffff; font-weight: 600;">Tam:</b> ${stringTamanhosAtual}
+                </div>
+                <div style="width: 40px; height: 1px; background-color: rgba(255,255,255,0.2); margin: 10px auto;"></div>
+            `;
 
+            // 2. Preços reduzidos com menor espaçamento
             modalPrices.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-                    <div class="modal-price-installments">${calcularParcelamento(produto.por)}</div>
-                    <div class="modal-price-total">R$ ${produto.por}</div>
-                    <div class="modal-price-pix">R$ ${calcularDesconto(produto.por)}</div>
+                <div style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: 10px;">
+                    <div class="modal-price-installments" style="margin-bottom: 2px; font-size: 18px;">
+                        ${calcularParcelamento(produto.por)}
+                    </div>
+                    <div class="modal-price-total" style="font-size: 11px; margin-bottom: 6px; color: #888;">
+                        Total: R$ ${produto.por}
+                    </div>
+                    <div class="modal-price-pix" style="background: rgba(76, 175, 80, 0.15); padding: 5px 14px; border-radius: 4px; border: 1px solid rgba(76, 175, 80, 0.25); font-size: 14px;">
+                        R$ ${calcularDesconto(produto.por)} <span class="price-small" style="color: #a5d6a7; font-size: 9px; margin-left: 5px;">NO PIX</span>
+                    </div>
                 </div>
             `;
 
